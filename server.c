@@ -1,20 +1,7 @@
 #include "headers.h"
 
-void recieve_request(char* buffer, int client_socket){
-    bzero(buffer, MAX_LENGTH);
-    recv(client_socket, buffer, MAX_LENGTH, 0);
-    printf("Client: %s\n", buffer);
-}
-
-
-void send_request(char* buffer, int client_socket){
-    bzero(buffer, 1024);
-    fgets(buffer, MAX_LENGTH, stdin);
-    int length_of_buffer = strlen(buffer); 
-    buffer [ length_of_buffer - 1 ] = '\0'; 
-    printf("Server: %s\n", buffer);
-    send(client_socket, buffer, strlen(buffer), 0);
-}
+char *ip = "127.0.0.1";
+int port = PORT;
 
 int main(){
 
@@ -65,12 +52,12 @@ int main(){
         printf("Client connected.\n");
 
         // Recieve the request
-        recieve_request(buffer, client_socket);
+        receive_client_request(buffer, client_socket);
         
       
         // Send the response 
         printf("Enter the response for sending to the client:");
-        send_request(buffer, client_socket);
+        send_server_request(buffer, client_socket);
 
         // CLose the socket
         close(client_socket);

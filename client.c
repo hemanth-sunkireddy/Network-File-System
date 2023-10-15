@@ -1,15 +1,7 @@
 #include "headers.h"
 
-
-void send_request(char* buffer, int sock){
-        bzero(buffer, MAX_LENGTH);
-        printf("Enter your request and wait till the server sends response back:");
-        fgets(buffer, MAX_LENGTH, stdin);
-        int length_of_buffer = strlen(buffer);
-        buffer [ length_of_buffer - 1 ] = '\0'; 
-        printf("Client: %s\n", buffer);
-        send(sock, buffer, strlen(buffer), 0);
-}
+char *ip = "127.0.0.1";
+int port = PORT;
 
 int main(){
 
@@ -43,15 +35,15 @@ int main(){
 
         
           // Send the request to server
-          send_request(buffer, sock);
+          send_client_request(buffer, sock);
 
 
           // Recieve the response from server
           printf("Wait till the response from server:\n");
-          bzero(buffer, MAX_LENGTH);
-          recv(sock, buffer, sizeof(buffer), 0);
-          printf("Server: %s\n", buffer);
-
+          // bzero(buffer, MAX_LENGTH);
+          // recv(sock, buffer, sizeof(buffer), 0);
+          // printf("Server: %s\n", buffer);
+          receive_server_request(buffer,sock);
 
 
           // Close the socket.
