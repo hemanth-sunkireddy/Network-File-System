@@ -2,7 +2,7 @@
 
 char *ip = "127.0.0.1";
 int port = PORT;
-
+char message[1024];
 int main(){
 
   int server_socket, client_socket;
@@ -41,6 +41,8 @@ int main(){
   while(1){
 
         // Listen server
+        
+        
         listen(server_socket, 5);
         printf("Listening...\n");
 
@@ -53,6 +55,8 @@ int main(){
 
         // Recieve the request
         receive_client_request(buffer, client_socket);
+
+
         
       
         // Send the response 

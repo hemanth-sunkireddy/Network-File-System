@@ -2,7 +2,7 @@
 
 char *ip = "127.0.0.1";
 int port = PORT;
-
+char message[MAX_LENGTH];
 int main(){
 
   int sock;
@@ -13,7 +13,7 @@ int main(){
   
 
    while(1){
-
+          
           // Creating socket for connecting to server.
           sock = socket(AF_INET, SOCK_STREAM, 0);
           if (sock < 0){

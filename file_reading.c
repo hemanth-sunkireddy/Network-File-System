@@ -8,7 +8,7 @@ int main() {
 
 
       // Opening file pointer 
-      FILE* file_pointer;
+      FILE* file_pointer=NULL;
       file_pointer = fopen("client.c", "r");
       
       // Error checking for file pointer 

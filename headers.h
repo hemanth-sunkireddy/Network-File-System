@@ -14,9 +14,9 @@
 #include "client_sendingRequest.h"
 #include "client_receivingResponse.h"
 
-#define PORT 5000 
-#define MAX_LENGTH 1024 
 
+#define PORT 6010 //5000
+#define MAX_LENGTH 1024 
 
 extern char *ip ;
 extern int port;
