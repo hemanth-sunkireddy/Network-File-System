@@ -12,7 +12,7 @@
 #include "server_receivingRequest.h"
 #include "server_sendingResponse.h"
 #include "client_sendingRequest.h"
-#include "client_recievingResponse.h"
+#include "client_receivingResponse.h"
 
 #define PORT 5000 
 #define MAX_LENGTH 1024 
