@@ -3,9 +3,10 @@
 char *ip = "127.0.0.1";
 int port = PORT;
 char message[MAX_LENGTH];
+
 int main(){
 
-  int sock;
+  int client_socket;
   struct sockaddr_in client_address;
   socklen_t client_address_size;
   char buffer[MAX_LENGTH];
@@ -15,13 +16,13 @@ int main(){
    while(1){
           
           // Creating socket for connecting to server.
-          sock = socket(AF_INET, SOCK_STREAM, 0);
-          if (sock < 0){
+          client_socket = socket(AF_INET, SOCK_STREAM, 0);
+          if (client_socket < 0){
             perror("Socket error");
             exit(1);
           }
           else{
-            printf("TCP SERVER SOCKET CREATED.\n");
+            printf("TCP CLIENT SOCKET CREATED.\n");
           }
 
           memset(&client_address, '\0', sizeof(client_address));
@@ -30,24 +31,24 @@ int main(){
           client_address.sin_addr.s_addr = inet_addr(ip);
 
           // Connect to the server
-          connect(sock, (struct sockaddr*)&client_address, sizeof(client_address));
-          printf("Connected to the server.\n");
+          connect(client_socket, (struct sockaddr*)&client_address, sizeof(client_address));
+          printf("Connected to the server.\n\n");
 
         
           // Send the request to server
-          send_client_request(buffer, sock);
+          send_client_request(client_socket);
 
 
           // Recieve the response from server
-          printf("Wait till the response from server:\n");
+          printf("\nWait till the response from server:\n");
           // bzero(buffer, MAX_LENGTH);
           // recv(sock, buffer, sizeof(buffer), 0);
           // printf("Server: %s\n", buffer);
-          receive_server_request(buffer,sock);
+          receive_server_request(client_socket);
 
 
           // Close the socket.
-          close(sock);
+          close(client_socket);
           printf("Disconnected from the server.\n");
           sleep(1);
 

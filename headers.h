@@ -9,14 +9,51 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include "server_receivingRequest.h"
-#include "server_sendingResponse.h"
-#include "client_sendingRequest.h"
-#include "client_receivingResponse.h"
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/wait.h> 
 
-
-#define PORT 6010 //5000
+#define PORT 6010 
 #define MAX_LENGTH 1024 
+
+
+void reading_the_file(char file_name[MAX_LENGTH]); 
+void writing_the_file(char file_name[MAX_LENGTH]);
+void deleting_the_file(char file_name[MAX_LENGTH]);
+void creating_the_file(char file_name[MAX_LENGTH]);
+void additional_information_of_file(char file_name[MAX_LENGTH]);
+void additional_information_of_folder(char folder_name[MAX_LENGTH]);
+void writing_the_folder(char folder_name[MAX_LENGTH]);
+void deleting_the_folder(char folder_name[MAX_LENGTH]);
+void creating_the_folder(char folder_name[MAX_LENGTH]);
+void listing_all_files_and_folders(char folder_name[MAX_LENGTH]);
+
+
+void receive_client_request(int client_socket);
+void send_client_request(int sock);
+void send_server_request(char* buffer, int client_socket);
+void receive_server_request(int client_socket);
+
+
+
+
+typedef struct Packet
+{
+    int total_chunks;
+    char data[MAX_LENGTH];
+} Packet;
+
+
+typedef struct fileNameAndOperation{
+    int operation_number; 
+    char name_of_file_or_folder[MAX_LENGTH];
+}fileNameAndOperation;
+
+
+
+
+
+
 
 extern char *ip ;
 extern int port;

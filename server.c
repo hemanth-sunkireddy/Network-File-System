@@ -36,28 +36,22 @@ int main(){
     printf("Binded to the port number: %d\n", port);
   }
 
-  
-
   while(1){
 
         // Listen server
-        
-        
         listen(server_socket, 5);
         printf("Listening...\n");
 
-        printf("Wait till the client sends the request:\n");
+        printf("Wait till the client connects:\n");
 
         // Accept the client_socket 
         address_size = sizeof(client_address);
         client_socket = accept(server_socket, (struct sockaddr*)&client_address, &address_size);
         printf("Client connected.\n");
+        printf("Wait till the client sends the request:\n");
 
         // Recieve the request
-        receive_client_request(buffer, client_socket);
-
-
-        
+        receive_client_request(client_socket);
       
         // Send the response 
         printf("Enter the response for sending to the client:");

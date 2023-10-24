@@ -1,43 +1,37 @@
 #include "headers.h"
+
 extern char *message;
-void send_client_request(char* buffer, int sock){
-        char file_name[MAX_LENGTH];
-        char file_operation[MAX_LENGTH];
 
-        bzero(buffer, MAX_LENGTH);
-        printf("Enter the file name:");
-        scanf("%s", file_name);
-        send(sock, file_name, strlen(file_name), 0);
+void send_client_request(int client_socket){
 
-        // char n[100];
-        // recv(sock, n, sizeof(n), 0);
-        // printf("n %s\n",n);
+        fileNameAndOperation file_or_folder_details;
 
-        printf("Enter the operation you want");
-        scanf("%s", file_operation);
-        //printf("%s %s\n", file_name, file_operation);
-        // fgets(buffer, MAX_LENGTH, stdin);
-        // int length_of_buffer = strlen(buffer);
-        // buffer [ length_of_buffer - 1 ] = '\0'; 
-        // printf("Client: %s\n", buffer);
+        // Displaying all options in the terminal of the client side.
+        printf("Choose one number from below:\n");
+        printf("-------------------------------\n");
+        printf("1 - Reading a File\n");
+        printf("2 - Writing a File\n");
+        printf("3 - Deleting a File\n");
+        printf("4 - Creating a File\n");
+        printf("5 - Getting Additional information of File \n");
+        printf("6 - Getting Additional information of Folder\n");
+        printf("7 - Writing a Folder\n");
+        printf("8 - Deleting a Folder\n");
+        printf("9 - Creating a Folder\n");
+        printf("10 - Listing all files and Folders\n");
+        printf("-------------------------------\n");
+
+        printf("Enter the number:");
+        int option_choosing_number; 
+        scanf("%d", &file_or_folder_details.operation_number);
+
+        if ( option_choosing_number <= 5){ 
+                printf("Enter the file name: ");
+        }
+        else{
+                printf("Enter the Folder name: ");
+        }
+        scanf("%s", file_or_folder_details.name_of_file_or_folder);
         
-        
-        send(sock, file_operation, strlen(file_operation), 0);
-
-        // if(strstr(file_operation,"write")!=NULL){
-        //         // char mode[200];
-        //         // printf("overwrite: 1 , append: 2");
-        //         // scanf("%s", mode);
-        //         // send(sock, mode, strlen(mode), 0);
-
-        //         printf("Input string ot write:\n");
-        //         char *input = NULL;
-        //         size_t n = 50;
-        //         ssize_t read_bytes =getline(&input, &n, stdin);
-        //         input[strcspn(input, "\n")]='\0';
-
-        //         send(sock, input, strlen(input), 0);
-
-
-        // }
+        send(client_socket, &file_or_folder_details, MAX_LENGTH, 0);
 }
