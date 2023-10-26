@@ -41,15 +41,12 @@ int main(){
 
           // Recieve the response from server
           printf("\nWait till the response from server:\n");
-          // bzero(buffer, MAX_LENGTH);
-          // recv(sock, buffer, sizeof(buffer), 0);
-          // printf("Server: %s\n", buffer);
           receive_server_request(client_socket);
 
 
           // Close the socket.
           close(client_socket);
-          printf("Disconnected from the server.\n");
+          printf("Disconnected from the server.\n\n");
           sleep(1);
 
   }

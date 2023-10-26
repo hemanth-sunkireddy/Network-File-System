@@ -160,12 +160,4 @@ void receive_client_request(int client_socket)
     //         printf("File created successfully: %s\n", file_name);
 
     // }
-
-    
-
-
-
-    send(client_socket, "hi", strlen("hi"), 0);
-
-
 }
