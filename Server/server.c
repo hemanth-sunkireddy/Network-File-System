@@ -40,22 +40,6 @@ int main(){
 
   while(1){
 
-       FILE *file_pointer= fopen("README.md", "r");
-
-            // Check if the file opened successfully.
-            if (file_pointer == NULL) {
-                printf("Could not open file.\n");
-                // strcpy ( message_status.status_message, "COULD NOT OPEN FILE");
-                return ;
-                
-            }
-            else{
-                printf("File opened successfully\n");
-                // strcpy ( message_status.status_message, "OPENED SUCCESSFULLY");
-                return ;
-                
-            }
-
         // Listen server
         listen(server_socket, 5);
         printf("Listening...\n");
