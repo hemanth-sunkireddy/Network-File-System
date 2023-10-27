@@ -1,4 +1,4 @@
-#include "headers.h"
+#include "../headers.h"
 
 char *ip = "127.0.0.1";
 int port = PORT;

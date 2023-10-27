@@ -7,11 +7,11 @@
 ```
 make
 ```
-3. Then run the below command to activate server. 
+3. Go to the Server Folder and  run the below command to activate server. 
 ```
 ./server
 ```
-4. Open another terminal and run the below command to activate client.
+4. Open another terminal and go to the Client folder then run the below command to activate client.
 ```
 ./client
 ```
