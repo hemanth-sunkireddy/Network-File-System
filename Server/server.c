@@ -5,6 +5,8 @@ int port = PORT;
 char message[1024];
 int main(){
 
+  
+
   int server_socket, client_socket;
   struct sockaddr_in server_address, client_address;
   socklen_t address_size;
@@ -38,6 +40,22 @@ int main(){
 
   while(1){
 
+       FILE *file_pointer= fopen("README.md", "r");
+
+            // Check if the file opened successfully.
+            if (file_pointer == NULL) {
+                printf("Could not open file.\n");
+                // strcpy ( message_status.status_message, "COULD NOT OPEN FILE");
+                return ;
+                
+            }
+            else{
+                printf("File opened successfully\n");
+                // strcpy ( message_status.status_message, "OPENED SUCCESSFULLY");
+                return ;
+                
+            }
+
         // Listen server
         listen(server_socket, 5);
         printf("Listening...\n");
@@ -50,12 +68,19 @@ int main(){
         printf("Client connected.\n");
         printf("Wait till the client sends the request:\n");
 
+        acknowledgmentMessage message_status;
+
+
+         
+
         // Recieve the request
-        receive_client_request(client_socket);
+        message_status =  receive_client_request(client_socket, message_status);
+        printf("%s\n", message_status.status_message);
       
-        // Send the response 
-        printf("Enter the response for sending to the client:");
+        // Sending the response
         send_server_request(buffer, client_socket);
+
+        printf("%s\n", message_status.status_message);
 
         // CLose the socket
         close(client_socket);

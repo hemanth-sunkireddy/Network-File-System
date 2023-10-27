@@ -13,11 +13,24 @@
 #include <fcntl.h>
 #include <sys/wait.h> 
 
-#define PORT 6010 
+#define PORT 8000
 #define MAX_LENGTH 1024 
 
 
-void reading_the_file(char file_name[MAX_LENGTH]); 
+typedef struct Packet
+{
+    int total_chunks;
+    char data[MAX_LENGTH];
+} Packet;
+
+
+
+typedef struct acknowledgmentMessage{
+    char status_message[MAX_LENGTH];
+    Packet file_or_folder_content[MAX_LENGTH];
+}acknowledgmentMessage;
+
+acknowledgmentMessage reading_the_file(char file_name[MAX_LENGTH], acknowledgmentMessage message_status); 
 void writing_the_file(char file_name[MAX_LENGTH]);
 void deleting_the_file(char file_name[MAX_LENGTH]);
 void creating_the_file(char file_name[MAX_LENGTH]);
@@ -29,7 +42,9 @@ void creating_the_folder(char folder_name[MAX_LENGTH]);
 void listing_all_files_and_folders(char folder_name[MAX_LENGTH]);
 
 
-void receive_client_request(int client_socket);
+
+
+acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status);
 void send_client_request(int sock);
 void send_server_request(char* buffer, int client_socket);
 void receive_server_request(int client_socket);
@@ -37,11 +52,6 @@ void receive_server_request(int client_socket);
 
 
 
-typedef struct Packet
-{
-    int total_chunks;
-    char data[MAX_LENGTH];
-} Packet;
 
 
 typedef struct fileNameAndOperation{

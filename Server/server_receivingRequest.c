@@ -1,6 +1,6 @@
 #include "../headers.h"
 
-void receive_client_request(int client_socket)
+acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status)
 {   
     fileNameAndOperation file_or_folder_details;
 
@@ -10,8 +10,11 @@ void receive_client_request(int client_socket)
     int operation_number = file_or_folder_details.operation_number; 
     printf("The operation number he had choosen.:%d\n", operation_number);
     if ( operation_number == 1 ) 
-    { 
-        reading_the_file(file_or_folder_details.name_of_file_or_folder);      
+    {
+
+        message_status =  reading_the_file(file_or_folder_details.name_of_file_or_folder, message_status);   
+        printf("%s\n", message_status.status_message);
+        return message_status;   
     }
     else if ( operation_number == 2 ) 
     { 
@@ -50,45 +53,7 @@ void receive_client_request(int client_socket)
         listing_all_files_and_folders(file_or_folder_details.name_of_file_or_folder);
     }
 
-    //read a file :
-    // if (strstr(file_operation, "read") != NULL) {
-    //         // Open the file.
-    //         FILE *file_pointer= fopen(file_name, "r");
 
-    //         // Check if the file opened successfully.
-    //         if (file_pointer == NULL) {
-    //             printf("Could not open file.\n");
-    //             return ;
-    //         }
-    //         else{
-    //             printf("File opened successfully\n");
-    //         }
-
-    //         // Read the file contents.
-    //         fseek(file_pointer, 0L, SEEK_END); 
-    //         long long int length_of_the_file= ftell(file_pointer); 
-    //         printf("Total size of the file: %lld\n", length_of_the_file);
-
-    //         Packet file_content[length_of_the_file];
-    //         char file_data[MAX_LENGTH];
-    //         int temp_count = 0;
-
-    //         printf("File data:\n");
-    //         while (fgets(file_data, sizeof(file_data), file_pointer) != NULL) {
-    //             // file_content[temp_count].total_chunks = length_of_the_file;
-    //             // strcpy(file_content[temp_count++].data, file_data);
-    //             printf("%s", file_data);
-    //         }
-
-    //         // Close the file.
-    //         fclose(file_pointer);
-    //         printf("File read successfully\n");
-
-    //         for ( int i = 0; i < length_of_the_file; i++ ) { 
-    //             printf("%s ", file_content[i].data);
-    //         }
-        
-    // }
         
 
     // //write a file :
