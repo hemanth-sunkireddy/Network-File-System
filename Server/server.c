@@ -61,10 +61,11 @@ int main(){
         message_status =  receive_client_request(client_socket, message_status);
         printf("%s\n", message_status.status_message);
       
+        // for (int i = 0; i < message_status.file_or_folder_content[0].total_chunks; i++ ) { 
+        //   printf("%s\n", message_status.file_or_folder_content[i].data);
+        // }
         // Sending the response
-        send_server_request(buffer, client_socket);
-
-        printf("%s\n", message_status.status_message);
+        send_server_request(message_status, client_socket);
 
         // CLose the socket
         close(client_socket);

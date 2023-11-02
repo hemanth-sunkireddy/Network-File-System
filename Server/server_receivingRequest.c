@@ -13,7 +13,11 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     {
 
         message_status =  reading_the_file(file_or_folder_details.name_of_file_or_folder, message_status);   
-        printf("%s\n", message_status.status_message);
+        // printf("%s\n", message_status.status_message);
+
+        // for ( int i = 0 ;  i < message_status.file_or_folder_content[0].total_chunks; i++ ) { 
+        //     printf("%s", message_status.file_or_folder_content[i].data);
+        // }
         return message_status;   
     }
     else if ( operation_number == 2 ) 
@@ -54,7 +58,7 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     }
 
 
-        
+      
 
     // //write a file :
     // else  if(strstr(file_operation,"write")!=NULL){

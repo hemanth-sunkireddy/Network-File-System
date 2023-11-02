@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <sys/wait.h> 
 
-#define PORT 8000
+#define PORT 6000
 #define MAX_LENGTH 1024 
 
 
@@ -46,11 +46,8 @@ void listing_all_files_and_folders(char folder_name[MAX_LENGTH]);
 
 acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status);
 void send_client_request(int sock);
-void send_server_request(char* buffer, int client_socket);
+void send_server_request(acknowledgmentMessage message_status, int client_socket);
 void receive_server_request(int client_socket);
-
-
-
 
 
 
@@ -58,10 +55,6 @@ typedef struct fileNameAndOperation{
     int operation_number; 
     char name_of_file_or_folder[MAX_LENGTH];
 }fileNameAndOperation;
-
-
-
-
 
 
 
