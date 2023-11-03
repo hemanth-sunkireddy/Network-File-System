@@ -3,12 +3,27 @@
 void receive_server_request(int client_socket)
 {
     acknowledgmentMessage message_status;
-    recv(client_socket, &message_status, MAX_LENGTH * MAX_LENGTH, 0);
+    char buffer[MAX_LENGTH];
+    
+    int bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
 
-    printf("%s\n", message_status.status_message);
-    printf("%d\n", message_status.file_or_folder_content[0].total_chunks);
-    for ( int i = 0; i < message_status.file_or_folder_content[0].total_chunks; i++ ) { 
-        printf("%s", message_status.file_or_folder_content[i].data);
+    // Null-terminate the received data.
+    buffer[bytes_received] = '\0';
+
+    printf("Received: %s\n", buffer);
+
+    int length;
+    sscanf(buffer, "%d", &length);
+
+    printf("Length: %d\n", length);
+
+    for (int i = 0; i < length; i++) {
+        bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
+
+        buffer[bytes_received] = '\0';
+
+        printf("%s", buffer);
     }
-    printf("Recieved server response.\n");
+
+    printf("Read response successfully.\n");
 }

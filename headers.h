@@ -13,7 +13,7 @@
 #include <fcntl.h>
 #include <sys/wait.h> 
 
-#define PORT 6000
+#define PORT 5000
 #define MAX_LENGTH 1024 
 
 

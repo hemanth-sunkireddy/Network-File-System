@@ -65,4 +65,21 @@ make
 10 - Listing all files and Folders
 ```
 
+### Basic work flow
+1. Client will choose operation Number. 
+2. Client will choose file / folder name. 
+3. Server process the request. 
+4. Server Sends the acknowledgement Message. 
+5. Along with acknowledgment message, if client asks for reading, writing or listing then respective data also sent to client. 
+
+
+### Individual Operations 
+#### 1. Reading a File
+1. Client will choose operation 1. 
+2. Client will give file Name. 
+3. Assuming the default folder / path where file opening happens is in the server folder. 
+4. Copying the data in the Packets structs with each packet sub array contains 1024 character length. 
+5. Copying the total number of chunks in message_status.file_or_folder_content[0].total_chunks.
+6. And the data in the respective sub chunks of message_status.file_or_folder_content[i].data.
+
 
