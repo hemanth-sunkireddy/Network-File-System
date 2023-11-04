@@ -138,3 +138,17 @@ void additional_information_of_folder(char folderPath[MAX_LENGTH]){ {
     return 0;
 }
 
+/* subfolder/files in given folder, reccruesion not done
+sample output:
+Folder Information for folder_1:
+Size: 4096 bytes
+Permissions: drwxrwxr-x
+Last Modified Time: Sat Nov  4 14:51:36 2023
+Created Time: Sat Nov  4 14:51:36 2023
+Parent Folder: /home/popos/OSN
+Total Size of folder_1: 91.23 KB
+Total Files: 0
+Total Subfolders: 3
+
+*/
+
