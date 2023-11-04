@@ -83,6 +83,11 @@ make
 5. Copying the total number of chunks in message_status.file_or_folder_content[0].total_chunks.
 6. And the data in the respective sub chunks of message_status.file_or_folder_content[i].data.
 
+#### 4. Creating a File
+1. Client give the file name along with path relative to the Server Folder. 
+2. Server Checks for permission of the parent folder and creates a new file if not exists. May be create a new file even already exists. 
+3. May implement some cases where if file already exists it will show warning or error. But not for now. 
+
 #### 6. Getting Folder information
 1. Client gives the folder path. (Assuming staring point is Server folder)
 2. If exists then fetch number of files, number of folders, total size of the folder, permissions, last modified time and created time. 

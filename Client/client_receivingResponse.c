@@ -35,10 +35,10 @@ void receive_server_request(int client_socket)
 
         printf("Read response successfully.\n");
     }
-    else if (operation_number == 9 ){
+    else if ( operation_number == 4 ){
         char message_status[MAX_LENGTH];
         recv(client_socket, message_status, MAX_LENGTH, 0);
-        printf("%s\n", message_status);
+        printf("Operation Status: %s\n", message_status);
     }
     else if ( operation_number == 6 ){
         char message_status[MAX_LENGTH];
@@ -50,4 +50,12 @@ void receive_server_request(int client_socket)
         
         printf("Folder Name: %s\n", folder_details.folder_name);
     }
+    else if (operation_number == 9 ){
+        char message_status[MAX_LENGTH];
+        recv(client_socket, message_status, MAX_LENGTH, 0);
+        printf("%s\n", message_status);
+    }
+
+   
+
 }
