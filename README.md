@@ -94,6 +94,13 @@ make
 3. Send the data to  the client. 
 4. (Need to document here properly later.) Only folder name sent to client for now. Working on sending all details to client. 
 
+#### 8. Deleting a Folder
+1. Client gives the path respective to the Server Folder. 
+2. Deleting Folder when no SubFolder present implemented. Deletion of SubFolder also implemented.
+3. Deleting a Folder which has subFolders. ( pending, working on it).
+4. Checked directory existence before performing folder deletion. (Done).
+5. Deleting a Folder which have write permission but subFolder dont have the write permission. (Edge Case may implement later)
+
 #### 9. Creating a Folder 
 1. All new folders will be created in the Server directory. 
 2. Implemented one Folder creation in the Server directory.
