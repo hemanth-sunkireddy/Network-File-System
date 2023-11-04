@@ -99,11 +99,11 @@ make
 6. Also implemented other errors. (Need to document here properly later.)
 
 
----
+***
 ## Naming Server (NM)
 Documentation of naming server.
----
+***
 ## Storage Server (SS)
 Documentation of storage server.
----
+***
 
