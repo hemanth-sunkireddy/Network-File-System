@@ -1,18 +1,17 @@
 #include "../headers.h"
 
-void creating_the_file(char file_name[MAX_LENGTH]){
-    printf("File creation successful.\n");
+acknowledgmentMessage creating_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status){
 
-
-    // const char *file_path = "empty_file.txt";
-
-    // // Create an empty file
-    // FILE *file = fopen(file_path, "w");
-    // if (file == NULL) {
-    //     perror("Error creating an empty file");
-    //     return 1;
-    // }
-
-    // fclose(file);
-    // printf("Empty file created at %s\n", file_path);
+    FILE *file = fopen(file_name, "w");
+            
+    if (file == NULL) {
+        perror("Error creating file");
+        strcpy(message_status.status_message, "ERROR CREATING FILE");
+        return message_status; // Return an error code to indicate failure
+    }
+    // Close the file
+    fclose(file);
+    strcpy(message_status.status_message, "FILE CREATED SUCCESSFULLY");        
+    printf("File created successfully: %s\n", file_name);
+    return message_status;
 }

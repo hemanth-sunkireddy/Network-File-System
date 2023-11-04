@@ -17,7 +17,7 @@
 #include <limits.h>
 #include <time.h>
 
-#define PORT 6000
+#define PORT 5000
 #define MAX_LENGTH 1024 
 
 
@@ -55,10 +55,10 @@ typedef struct fileNameAndOperation{
 
 
 
-acknowledgmentMessage reading_the_file(char file_name[MAX_LENGTH], acknowledgmentMessage message_status); 
-void writing_the_file(char file_name[MAX_LENGTH]);
-void deleting_the_file(char file_name[MAX_LENGTH]);
-void creating_the_file(char file_name[MAX_LENGTH]);
+acknowledgmentMessage reading_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status); 
+acknowledgmentMessage writing_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
+acknowledgmentMessage deleting_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
+acknowledgmentMessage creating_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
 void additional_information_of_file(char file_name[MAX_LENGTH]);
 acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 void writing_the_folder(char folder_name[MAX_LENGTH]);

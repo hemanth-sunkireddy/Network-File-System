@@ -7,6 +7,17 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     recv(client_socket, &file_or_folder_details, MAX_LENGTH, 0);
     printf("client Asked for this file / folder: %s\n", file_or_folder_details.name_of_file_or_folder);
 
+    char full_path[2*MAX_LENGTH];
+
+    // Get the current working directory
+    char cwd[MAX_LENGTH];
+    if (getcwd(cwd, sizeof(cwd)) != NULL) {
+        snprintf(full_path, 2*MAX_LENGTH, "%s/%s", cwd, file_or_folder_details.name_of_file_or_folder);
+    } else {
+        perror("Error getting current working directory");
+        // Handle the error as needed
+    }   
+
     int operation_number = file_or_folder_details.operation_number; 
 
     // Copying operation_number to the acknowledgment Message struct. 
@@ -15,21 +26,23 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     printf("The operation number he had choosen.:%d\n", operation_number);
     if ( operation_number == 1 ) 
     {
-
-        message_status =  reading_the_file(file_or_folder_details.name_of_file_or_folder, message_status);   
-        return message_status;   
+        message_status =  reading_the_file(full_path, message_status);   
+        return message_status;
     }
     else if ( operation_number == 2 ) 
     { 
-        writing_the_file(file_or_folder_details.name_of_file_or_folder);
+        message_status =  writing_the_file(full_path,message_status);
+        return message_status;
     }
     else if ( operation_number == 3 ) 
     {
-        deleting_the_file(file_or_folder_details.name_of_file_or_folder);
+        message_status = deleting_the_file(full_path,message_status);
+        return message_status;
     }
     else if ( operation_number == 4 ) 
     { 
-        creating_the_file(file_or_folder_details.name_of_file_or_folder);
+        message_status = creating_the_file(full_path,message_status);
+        return message_status;
     }
     else if ( operation_number == 5 ) 
     { 
