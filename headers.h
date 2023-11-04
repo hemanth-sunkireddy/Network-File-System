@@ -12,6 +12,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/wait.h> 
+#include<errno.h>
+#include <dirent.h>
 
 #define PORT 5000
 #define MAX_LENGTH 1024 
@@ -26,6 +28,7 @@ typedef struct Packet
 
 
 typedef struct acknowledgmentMessage{
+    int operation_number;
     char status_message[MAX_LENGTH];
     Packet file_or_folder_content[MAX_LENGTH];
 }acknowledgmentMessage;
@@ -38,7 +41,7 @@ void additional_information_of_file(char file_name[MAX_LENGTH]);
 void additional_information_of_folder(char folder_name[MAX_LENGTH]);
 void writing_the_folder(char folder_name[MAX_LENGTH]);
 void deleting_the_folder(char folder_name[MAX_LENGTH]);
-void creating_the_folder(char folder_name[MAX_LENGTH]);
+acknowledgmentMessage creating_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 void listing_all_files_and_folders(char folder_name[MAX_LENGTH]);
 
 

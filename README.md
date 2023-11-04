@@ -69,7 +69,8 @@ make
 1. Client will choose operation Number. 
 2. Client will choose file / folder name. 
 3. Server process the request. 
-4. Server Sends the acknowledgement Message. 
+4. Server sends the operation number to client. 
+4. According to the operation number client and server sends and recieves the acknowledgment message.
 5. Along with acknowledgment message, if client asks for reading, writing or listing then respective data also sent to client. 
 
 
@@ -81,5 +82,13 @@ make
 4. Copying the data in the Packets structs with each packet sub array contains 1024 character length. 
 5. Copying the total number of chunks in message_status.file_or_folder_content[0].total_chunks.
 6. And the data in the respective sub chunks of message_status.file_or_folder_content[i].data.
+
+### 9. Creating a Folder 
+1. All new folders will be created in the Server directory. 
+2. Implemented one Folder creation in the Server directory.
+3. If folder already exists, error in creating folder.
+4. To create subfolder, first will check for parent folder existence. If parent folder exist then success in creating folder, else error in creating folder.
+5. While creating the folder, Permissions of the parent folder checking. If parent folder has no written permission, then error.
+6. Also implemented other errors. (Need to document here properly later.)
 
 

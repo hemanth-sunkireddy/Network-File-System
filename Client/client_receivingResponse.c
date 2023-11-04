@@ -2,28 +2,42 @@
 
 void receive_server_request(int client_socket)
 {
-    acknowledgmentMessage message_status;
-    char buffer[MAX_LENGTH];
-    
-    int bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
 
-    // Null-terminate the received data.
-    buffer[bytes_received] = '\0';
+    char operation_number_string[MAX_LENGTH];
+    recv(client_socket, operation_number_string, MAX_LENGTH, 0);
+    int operation_number;
+    sscanf(operation_number_string, "%d", &operation_number);
+    printf("OPERATION NUMBER: %d\n", operation_number);
 
-    printf("Received: %s\n", buffer);
+    if ( operation_number == 1){
+        acknowledgmentMessage message_status;
+        char buffer[MAX_LENGTH];
+        
+        int bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
 
-    int length;
-    sscanf(buffer, "%d", &length);
-
-    printf("Length: %d\n", length);
-
-    for (int i = 0; i < length; i++) {
-        bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
-
+        // Null-terminate the received data.
         buffer[bytes_received] = '\0';
 
-        printf("%s", buffer);
-    }
+        printf("Received: %s\n", buffer);
 
-    printf("Read response successfully.\n");
+        int length;
+        sscanf(buffer, "%d", &length);
+
+        printf("Length: %d\n", length);
+
+        for (int i = 0; i < length; i++) {
+            bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
+
+            buffer[bytes_received] = '\0';
+
+            printf("%s", buffer);
+        }
+
+        printf("Read response successfully.\n");
+    }
+    else if (operation_number == 9 ){
+        char message_status[MAX_LENGTH];
+        recv(client_socket, message_status, MAX_LENGTH, 0);
+        printf("%s\n", message_status);
+    }
 }

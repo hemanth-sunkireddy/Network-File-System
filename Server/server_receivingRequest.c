@@ -8,16 +8,15 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     printf("client Asked for this file / folder: %s\n", file_or_folder_details.name_of_file_or_folder);
 
     int operation_number = file_or_folder_details.operation_number; 
+
+    // Copying operation_number to the acknowledgment Message struct. 
+    message_status.operation_number = operation_number;
+
     printf("The operation number he had choosen.:%d\n", operation_number);
     if ( operation_number == 1 ) 
     {
 
         message_status =  reading_the_file(file_or_folder_details.name_of_file_or_folder, message_status);   
-        // printf("%s\n", message_status.status_message);
-
-        // for ( int i = 0 ;  i < message_status.file_or_folder_content[0].total_chunks; i++ ) { 
-        //     printf("%s", message_status.file_or_folder_content[i].data);
-        // }
         return message_status;   
     }
     else if ( operation_number == 2 ) 
@@ -50,7 +49,9 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     }
     else if ( operation_number == 9 )
     { 
-        creating_the_folder(file_or_folder_details.name_of_file_or_folder);
+        message_status = creating_the_folder(file_or_folder_details.name_of_file_or_folder, message_status);
+        return message_status;
+
     }
     else if ( operation_number == 10 )
     {

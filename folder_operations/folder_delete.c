@@ -7,11 +7,11 @@
 #include <dirent.h>
 #include <errno.h>*/
 
-void deleting_the_folder(const char *folderPath) {
+void deleting_the_folder(char folder_name[MAX_LENGTH]) {
     //if you give direct folder1/folder2/folder3 ->deletes folder3
     //if you give folder1 -> delets all its subdirecties and files
     char message[256];
-    DIR *d = opendir(folderPath);
+    DIR *d = opendir(folder_name);
     struct dirent *entry;
 
     if (!d) {
@@ -25,34 +25,34 @@ void deleting_the_folder(const char *folderPath) {
             continue;
         }
 
-        char path[PATH_MAX];
-        snprintf(path, sizeof(path), "%s/%s", folderPath, entry->d_name);
+        char path[MAX_LENGTH];
+        snprintf(path, sizeof(path), "%s/%s", folder_name, entry->d_name);
 
-        if (entry->d_type == DT_DIR) {
-            // Recursive call to delete subfolders
-            if (deleteFolder(path) != 0) {
-                closedir(d);
-                // return 1;
-            }
-        } else {
-            if (remove(path) != 0) {
-                sprintf(message, "Error deleting file: %s\n", strerror(errno));
-                printf("%s", message);
-                closedir(d);
-                // return 1;
-            }
-        }
+        // if (entry->d_type == DT_DIR) {
+        //     // Recursive call to delete subfolders
+        //     if (deleteFolder(path) != 0) {
+        //         closedir(d);
+        //         // return 1;
+        //     }
+        // } else {
+        //     if (remove(path) != 0) {
+        //         sprintf(message, "Error deleting file: %s\n", strerror(errno));
+        //         printf("%s", message);
+        //         closedir(d);
+        //         // return 1;
+        //     }
+        // }
     }
 
     closedir(d);
 
-    if (rmdir(folderPath) != 0) {
+    if (rmdir(folder_name) != 0) {
         sprintf(message, "Error deleting folder: %s\n", strerror(errno));
         printf("%s", message);
         // return 1;
     }
 
-    sprintf(message, "Folder \"%s\" and its contents deleted successfully.\n", folderPath);
+    sprintf(message, "Folder \"%s\" and its contents deleted successfully.\n", folder_name);
     
     printf("%s", message);//or return message
 

@@ -1,26 +1,26 @@
 #include "../headers.h"
 
-void creating_the_folder(const char *folderName) {
-    //FOR SUBFOLDER
-    //YOU NEED TO FIST MAKE PARENT FOLDER1
-    //THEN FOLDER1/FOLDER2   ,CAN ASLO MADE
+acknowledgmentMessage creating_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status) {
+    //FOR SUBFOLDER YOU NEED TO FIRST MAKE PARENT FOLDER1 THEN FOLDER1/FOLDER2, can also made
     
-    int status = mkdir(folderName, 0755);
-    char message[256];
+    int status = mkdir(folder_name, 0755);
+    char message[MAX_LENGTH];
 
     if (status == 0) {
-        sprintf(message, "Folder \"%s\" created successfully.\n", folderName);
+        sprintf(message, "Folder \"%s\" created successfully.\n", folder_name);
     } else {
         if (errno == EEXIST) {
-            sprintf(message, "Folder \"%s\" already exists.\n", folderName);
+            sprintf(message, "Folder \"%s\" already exists.\n", folder_name);
         } else if (errno == EACCES) {
-            sprintf(message, "Permission denied to create folder \"%s\".\n", folderName);
+            sprintf(message, "Permission denied to create folder \"%s\".\n", folder_name);
         } else if (errno == ENOENT) {
-            sprintf(message, "The parent folder for \"%s\" does not exist.\n", folderName);
+            sprintf(message, "The parent folder for \"%s\" does not exist.\n", folder_name);
         } else {
-            sprintf(message, "Failed to create folder \"%s\". Error: %s\n", folderName, strerror(errno));
+            sprintf(message, "Failed to create folder \"%s\". Error: %s\n", folder_name, strerror(errno));
         }
     }
 
-    printf("%s", message);//return message
+    printf("%s", message);
+    strcpy ( message_status.status_message, message);
+    return message_status;
 }
