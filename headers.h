@@ -14,6 +14,8 @@
 #include <sys/wait.h> 
 #include<errno.h>
 #include <dirent.h>
+#include <limits.h>
+#include <time.h>
 
 #define PORT 5000
 #define MAX_LENGTH 1024 
@@ -25,20 +27,40 @@ typedef struct Packet
     char data[MAX_LENGTH];
 } Packet;
 
+typedef struct folderInformation{
+    char folder_name[MAX_LENGTH];
+    int size; 
+    char Permissions[MAX_LENGTH];
+    char last_modified_time[MAX_LENGTH];
+    char created_time[MAX_LENGTH];
+    char parent_folder[MAX_LENGTH];
+    float total_size_of_folder_in_KB;
+    int total_files;
+    int total_folders;
+}folderInformation;
 
 
 typedef struct acknowledgmentMessage{
     int operation_number;
     char status_message[MAX_LENGTH];
     Packet file_or_folder_content[MAX_LENGTH];
+    folderInformation folder_information;
 }acknowledgmentMessage;
+
+typedef struct fileNameAndOperation{
+    int operation_number; 
+    char name_of_file_or_folder[MAX_LENGTH];
+}fileNameAndOperation;
+
+
+
 
 acknowledgmentMessage reading_the_file(char file_name[MAX_LENGTH], acknowledgmentMessage message_status); 
 void writing_the_file(char file_name[MAX_LENGTH]);
 void deleting_the_file(char file_name[MAX_LENGTH]);
 void creating_the_file(char file_name[MAX_LENGTH]);
 void additional_information_of_file(char file_name[MAX_LENGTH]);
-void additional_information_of_folder(char folder_name[MAX_LENGTH]);
+acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 void writing_the_folder(char folder_name[MAX_LENGTH]);
 void deleting_the_folder(char folder_name[MAX_LENGTH]);
 acknowledgmentMessage creating_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
@@ -54,10 +76,7 @@ void receive_server_request(int client_socket);
 
 
 
-typedef struct fileNameAndOperation{
-    int operation_number; 
-    char name_of_file_or_folder[MAX_LENGTH];
-}fileNameAndOperation;
+
 
 
 

@@ -40,4 +40,12 @@ void receive_server_request(int client_socket)
         recv(client_socket, message_status, MAX_LENGTH, 0);
         printf("%s\n", message_status);
     }
+    else if ( operation_number == 6 ){
+        acknowledgmentMessage message_status;
+        recv(client_socket, &message_status, MAX_LENGTH, 0);
+        printf("OPERATION STATUS: %s\n", message_status.status_message);
+        char folder_details[MAX_LENGTH];
+        strcpy(folder_details, message_status.folder_information.folder_name);
+        printf("Folder Name: %s\n", folder_details);
+    }
 }

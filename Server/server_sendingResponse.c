@@ -33,5 +33,9 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         send(client_socket, message_status.status_message, MAX_LENGTH, 0);
         printf("Response of creating a Folder sent successfully.\n");
     }
+    else if ( message_status.operation_number == 6 ){
+        send(client_socket, &message_status, MAX_LENGTH, 0);    
+        printf("Response of folder information sent successfully.\n");
+    }
 
 }

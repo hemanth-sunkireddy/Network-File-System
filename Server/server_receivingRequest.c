@@ -37,7 +37,8 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     }  
     else if ( operation_number == 6 )
     { 
-        additional_information_of_folder(file_or_folder_details.name_of_file_or_folder);
+       message_status =  additional_information_of_folder(file_or_folder_details.name_of_file_or_folder, message_status);
+       return message_status;
     }
     else if ( operation_number == 7 ) 
     {
