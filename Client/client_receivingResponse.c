@@ -41,11 +41,13 @@ void receive_server_request(int client_socket)
         printf("%s\n", message_status);
     }
     else if ( operation_number == 6 ){
-        acknowledgmentMessage message_status;
-        recv(client_socket, &message_status, MAX_LENGTH, 0);
-        printf("OPERATION STATUS: %s\n", message_status.status_message);
-        char folder_details[MAX_LENGTH];
-        strcpy(folder_details, message_status.folder_information.folder_name);
-        printf("Folder Name: %s\n", folder_details);
+        char message_status[MAX_LENGTH];
+        recv(client_socket, message_status, MAX_LENGTH, 0);
+        printf("Operation status: %s\n", message_status);
+
+        folderInformation folder_details;
+        recv(client_socket, &folder_details, MAX_LENGTH * MAX_LENGTH, 0);
+        
+        printf("Folder Name: %s\n", folder_details.folder_name);
     }
 }

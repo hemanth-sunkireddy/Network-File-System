@@ -17,7 +17,7 @@
 #include <limits.h>
 #include <time.h>
 
-#define PORT 5000
+#define PORT 6000
 #define MAX_LENGTH 1024 
 
 

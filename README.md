@@ -87,8 +87,7 @@ make
 1. Client gives the folder path. (Assuming staring point is Server folder)
 2. If exists then fetch number of files, number of folders, total size of the folder, permissions, last modified time and created time. 
 3. Send the data to  the client. 
-4. (Need to document here properly later.)
-5. Struct of folder_information is not copying. Need to look into it.  
+4. (Need to document here properly later.) Only folder name sent to client for now. Working on sending all details to client. 
 
 #### 9. Creating a Folder 
 1. All new folders will be created in the Server directory. 
