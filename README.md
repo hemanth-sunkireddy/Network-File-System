@@ -83,6 +83,11 @@ make
 5. Copying the total number of chunks in message_status.file_or_folder_content[0].total_chunks.
 6. And the data in the respective sub chunks of message_status.file_or_folder_content[i].data.
 
+#### 2. Writing a File 
+1. Client asks for writing a file.
+2. Server checks for permission and ask the content to write then update the status accordingly.
+3. Client recieves the acknolwedgment. 
+
 #### 3. Deleting a File 
 1. Client will choose operation 3 and gives the file name. 
 2. If path is not correct and permissions not satisfied, error message sent. 
