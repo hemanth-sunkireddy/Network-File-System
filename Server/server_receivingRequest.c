@@ -59,7 +59,8 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     }
     else if ( operation_number == 8 ) 
     { 
-        deleting_the_folder(file_or_folder_details.name_of_file_or_folder);
+        message_status =  deleting_the_folder(file_or_folder_details.name_of_file_or_folder, message_status);
+        return message_status;
     }
     else if ( operation_number == 9 )
     { 

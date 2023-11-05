@@ -50,6 +50,11 @@ void receive_server_request(int client_socket)
         
         printf("Folder Name: %s\n", folder_details.folder_name);
     }
+    else if ( operation_number == 8 ){ 
+        char message_status[MAX_LENGTH];
+        recv(client_socket, message_status, MAX_LENGTH, 0);
+        printf("OPERATION STATUS:%s\n", message_status);
+    }
     else if (operation_number == 9 ){
         char message_status[MAX_LENGTH];
         recv(client_socket, message_status, MAX_LENGTH, 0);

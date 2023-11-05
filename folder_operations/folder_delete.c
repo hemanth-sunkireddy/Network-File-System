@@ -11,7 +11,7 @@
 //if you give direct folder1/folder2/folder3 ->deletes folder3
 //if you give folder1 -> delets all its subdirecties and files
 
-void deleting_the_folder(char folder_name[MAX_LENGTH]) {
+acknowledgmentMessage deleting_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status) {
     char message[MAX_LENGTH];
     DIR *d = opendir(folder_name);
     struct dirent *entry;
@@ -19,6 +19,7 @@ void deleting_the_folder(char folder_name[MAX_LENGTH]) {
     if (!d) {
             sprintf(message, "Error opening folder: %s\n", strerror(errno));
             printf("%s", message);
+            strcpy(message_status.status_message, "ERROR OPENING FOLDER. NO SUCH DIRECTORY");
     }
     else{
             while ((entry = readdir(d))) {
@@ -49,12 +50,16 @@ void deleting_the_folder(char folder_name[MAX_LENGTH]) {
 
             if (rmdir(folder_name) != 0) {
                 printf(message, "Error deleting folder: %s\n", strerror(errno));
+                strcpy(message_status.status_message, "ERROR DELETING FOLDER");
+
             }
             else{
                 printf("Folder \"%s\" and its contents deleted successfully.\n", folder_name);
+                strcpy(message_status.status_message, "FOLDER AND ITS CONTENTS DELETED SUCCESSFULLY");
             }
 
             
             printf("%s", message);
     }
+    return message_status;
 }
