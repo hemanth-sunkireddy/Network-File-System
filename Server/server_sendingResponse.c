@@ -28,6 +28,10 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         
         printf("Response for reading a file sent successfully\n");
     }
+    else if ( message_status.operation_number == 3 ){ 
+        send(client_socket, message_status.status_message, MAX_LENGTH, 0);
+        printf("Response of deleting a file sent successfully.\n");
+    }
     else if ( message_status.operation_number == 4 ) { 
         send(client_socket, message_status.status_message, MAX_LENGTH, 0);
         printf("Response of creating a file sent successfully.\n");

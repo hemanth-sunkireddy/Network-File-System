@@ -83,6 +83,11 @@ make
 5. Copying the total number of chunks in message_status.file_or_folder_content[0].total_chunks.
 6. And the data in the respective sub chunks of message_status.file_or_folder_content[i].data.
 
+#### 3. Deleting a File 
+1. Client will choose operation 3 and gives the file name. 
+2. If path is not correct and permissions not satisfied, error message sent. 
+3. Else File deletes and success message sent.
+
 #### 4. Creating a File
 1. Client give the file name along with path relative to the Server Folder. 
 2. Server Checks for permission of the parent folder and creates a new file if not exists. May be create a new file even already exists. 
