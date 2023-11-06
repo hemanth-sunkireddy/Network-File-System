@@ -49,6 +49,10 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         send(client_socket, &message_status.folder_information, MAX_LENGTH * MAX_LENGTH, 0);
         printf("Response of folder information sent successfully.\n");
     }
+    else if ( message_status.operation_number == 7 ) { 
+        send(client_socket, message_status.status_message, MAX_LENGTH, 0);
+        printf("Resonse of listing all files and folders sent successfully.\n");
+    }
     else if( message_status.operation_number == 8 ){
         send(client_socket, message_status.status_message, MAX_LENGTH, 0);
         printf("Response of deleting a Folder successfully.\n");

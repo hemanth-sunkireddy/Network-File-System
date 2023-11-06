@@ -56,7 +56,8 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     }
     else if ( operation_number == 7 ) 
     {
-        listing_all_files_and_folders(file_or_folder_details.name_of_file_or_folder);
+       message_status =  listing_all_files_and_folders(file_or_folder_details.name_of_file_or_folder, message_status);
+       return message_status;
     }
     else if ( operation_number == 8 ) 
     { 
@@ -78,6 +79,5 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     { 
         message_status = creating_the_folder(file_or_folder_details.name_of_file_or_folder, message_status);
         return message_status;
-
     }
 }

@@ -75,6 +75,10 @@ make
 3. Send the data to  the client. 
 4. (Need to document here properly later.) Only folder name sent to client for now. Working on sending all details to client. 
 
+#### 7. Listing all Files and Folders
+1. Client asks for folder information. 
+2. For now, Just sent acknowledgment message to the client. Need to implement sending complete list of files and folders. 
+
 #### 8. Deleting a Folder
 1. Client gives the path respective to the Server Folder. 
 2. Deleting Folder when no SubFolder present implemented. Deletion of SubFolder also implemented.
