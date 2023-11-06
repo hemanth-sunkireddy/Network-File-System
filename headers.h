@@ -61,7 +61,6 @@ acknowledgmentMessage deleting_the_file(char file_name[2*MAX_LENGTH], acknowledg
 acknowledgmentMessage creating_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage additional_information_of_file(char file_name[MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
-void writing_the_folder(char folder_name[MAX_LENGTH]);
 acknowledgmentMessage deleting_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage creating_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 void listing_all_files_and_folders(char folder_name[MAX_LENGTH]);
