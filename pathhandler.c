@@ -6,6 +6,11 @@
 
 #define MAX_PATH_LENGTH 256
 
+// printFullPathToNode  ,isPathValid(  are functions for implementing trie
+// printFullPathToNode : prints complete path from root node till given node , so you send delete file1.txt -> gives full path for doing operations
+//ispAthValid()   ->  check   if relative path or absolute path
+
+
 struct PathNode {
     char name[MAX_PATH_LENGTH];
     struct PathNode* parent;
