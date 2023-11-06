@@ -98,6 +98,10 @@ make
 2. Server Checks for permission of the parent folder and creates a new file if not exists. May be create a new file even already exists. 
 3. May implement some cases where if file already exists it will show warning or error. But not for now. 
 
+#### 5. Getting additional information of File 
+1. Client give the file name. 
+2. For now just acknowledgment is sending. But later implement all the deatils sending to client. 
+
 #### 6. Getting Folder information
 1. Client gives the folder path. (Assuming staring point is Server folder)
 2. If exists then fetch number of files, number of folders, total size of the folder, permissions, last modified time and created time. 

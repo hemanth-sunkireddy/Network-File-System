@@ -50,6 +50,11 @@ void receive_server_request(int client_socket)
         recv(client_socket, message_status, MAX_LENGTH, 0);
         printf("Operation Status: %s\n", message_status);
     }
+    else if ( operation_number == 5 ){ 
+        char message_status[MAX_LENGTH];
+        recv(client_socket, message_status, MAX_LENGTH, 0);
+        printf("Operation status:%s\n", message_status);
+    }
     else if ( operation_number == 6 ){
         char message_status[MAX_LENGTH];
         recv(client_socket, message_status, MAX_LENGTH, 0);
