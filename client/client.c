@@ -1,5 +1,4 @@
 
-
 #include "headers.h"
 
 
@@ -95,7 +94,7 @@ int main(){
               close(client_socket);
              printf("Disconnected from the Naming Server.\n");
              // Close the socket.
-            
+            //************
              //create socket for Storage Server
              strcpy(ip, reply.IP);
              port = reply.port;
@@ -149,3 +148,5 @@ int main(){
   return 0;
 
 }
+
+
