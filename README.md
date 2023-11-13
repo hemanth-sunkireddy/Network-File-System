@@ -10,3 +10,7 @@
 
 ### client 
 1. In README file of client folder. 
+
+### Assumptions: 
+1. If two different storage servers have same file name at the root level. ( NOT EXISTENCE CASE). 
+

@@ -17,8 +17,9 @@
 2. Initially, Client connects with particular socket of storage server. The request contains fileNameAndOperation struct. ( i.e; operation_number, Path, Storage    server number, integer value for whether naming server or client connected).
 3. naming_server_or_client = 0 represents client connected. else, naming_server_or_client = 1 represents naming server connected in the fileNameAndOperation struct. 
 4. Later going to the respective storage server and perform the operation mentioned.
+5. How to find naming server/ client connected using operation number he is sending. If operation number == 3 || 4 || 8 || 9 then naming server connected, else client connnected.
 
-### Delete operation: 
+### Deleting a File/Folder ( i.e; operation number == 4 || 8): 
 1. Naming server connects to respective storage server and Sends the path of the file/folder. 
 2. Then Storage server checks for the permission and perform operation then sends acknowledgment status Message to naming server. 
 

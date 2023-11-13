@@ -80,8 +80,15 @@ typedef struct acknowledgmentMessage{
     folderInformation folder_information;
 }acknowledgmentMessage;
 
+acknowledgmentMessage deleting_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
+acknowledgmentMessage creating_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
+acknowledgmentMessage deleting_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
+acknowledgmentMessage creating_the_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 
-acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status);
+
+
+acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server);
+void send_server_request(acknowledgmentMessage message_status, int client_socket);
 
 
 #endif
