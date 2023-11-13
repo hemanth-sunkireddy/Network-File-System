@@ -117,7 +117,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], struct acknowled
 
                         // Connect to the server
                         connect(ssx[i].ss_socket, (struct sockaddr*)&ssx[i].ss_address, sizeof(ssx[i].ss_address));
-                        printf("Connected to the server.\n\n");
+                        printf("Connected to the storage server %d.\n\n",i);
                         send(ssx[i].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
                         printf("Sent File or folder name and Operation number successfully\n");
                         if(operation_num==4){
@@ -126,6 +126,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], struct acknowled
                         else{
                             ssx[i].num_of_folders++;
                         }
+                        break;
                     }
                     else{
                         if(ssx[i].num_of_folders==MAX_FOLDER_LIMIT){
@@ -148,7 +149,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], struct acknowled
 
                         // Connect to the server
                         connect(ssx[i].ss_socket, (struct sockaddr*)&ssx[i].ss_address, sizeof(ssx[i].ss_address));
-                        printf("Connected to the server.\n\n");
+                        printf("Connected to the storage server %d.\n\n",i);
                         send(ssx[i].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
                         printf("Sent File or folder name and Operation number successfully\n");
                         if(operation_num==4){
@@ -157,6 +158,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], struct acknowled
                         else{
                             ssx[i].num_of_folders++;
                         }
+                        break;
                     }
                 }
             }
@@ -181,7 +183,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], struct acknowled
 
                         // Connect to the server
                         connect(ssx[number_of_storage_servers-1].ss_socket, (struct sockaddr*)&ssx[number_of_storage_servers-1].ss_address, sizeof(ssx[number_of_storage_servers-1].ss_address));
-                        printf("Connected to the server.\n\n");
+                        printf("Connected to the storage server %d.\n\n",number_of_storage_servers-1);
                         send(ssx[number_of_storage_servers-1].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
                         printf("Sent File or folder name and Operation number successfully\n");
                         if(operation_num==4){
@@ -224,7 +226,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], struct acknowled
 
                         // Connect to the server
                         connect(ssx[i].ss_socket, (struct sockaddr*)&ssx[i].ss_address, sizeof(ssx[i].ss_address));
-                        printf("Connected to the server.\n\n");
+                        printf("Connected to the storage server %d.\n\n",i);
                     send(ssx[i].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
                     printf("Sent File or folder name and Operation number successfully\n");
                     if(operation_num==4){
