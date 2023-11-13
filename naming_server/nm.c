@@ -5,7 +5,7 @@ int port = PORT;
 char message[1024];
 int main(){
 
-   SS_Info ssx[MAX_STORAGE_SERVERS];
+  SS_Info ssx[MAX_STORAGE_SERVERS];
   for (int i = 0; i < CURRENT_STORAGE_SERVERS; i++){
     ssx[i].SS_port = PORT + i;
     printf("Storage server %d number connected to port number %d\n", i, PORT + i);
@@ -94,7 +94,7 @@ int main(){
          
 
         // // Recieve the request
-        message_status = obtain_ss_info(ss_socket, message_status,client_operation_number_path_name.name_of_file_or_folder,client_operation_number_path_name.operation_number);
+        message_status = obtain_ss_info(ssx,ss_socket, message_status,client_operation_number_path_name);
         // printf("%s\n", message_status.status_message);
       
         

@@ -23,9 +23,11 @@
 #define MAX_STORAGE_SERVERS 1024
 #define MAX_PATH_LENGTH 10
 #define MAX_FOLDER_OR_FILE_LIMIT 10
+#define MAX_FILE_LIMIT 5
+#define MAX_FOLDER_LIMIT 5
 #define CURRENT_STORAGE_SERVERS 4
 
-static int ss_new_no=0;
+static int number_of_storage_servers=CURRENT_STORAGE_SERVERS;
 
 typedef struct accessible_path{
     char path[MAX_PATH_LENGTH];
@@ -37,7 +39,11 @@ typedef struct SS_Info{
     int client_port;
     int storage_server_number;
     accessible_path paths_accessible[MAX_FOLDER_OR_FILE_LIMIT];
-    int num_of_paths;
+    int num_of_files;
+    int num_of_folders;
+    int ss_socket;
+    struct sockaddr_in ss_address;
+    socklen_t ss_address_size;
 }SS_Info;
 
 typedef struct Packet
@@ -70,7 +76,17 @@ typedef struct fileNameAndOperation{
     char name_of_file_or_folder[MAX_LENGTH];
 }fileNameAndOperation;
 
-acknowledgmentMessage receive_initialized_ss_info(int client_socket, struct acknowledgmentMessage message_status);
+typedef struct Data_of_SS_SentToClient{
+    int SS_port;
+    char* SS_ip;
+    int SS_no;
+}Data_of_SS_SentToClient;
+
+typedef struct Data_Sent_To_SS{
+    fileNameAndOperation filenameandoperation;
+}Data_Sent_To_SS;
+
+acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int client_socket, struct acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name);
 
 extern char *ip ;
 extern int port;
