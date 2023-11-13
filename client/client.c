@@ -1,12 +1,47 @@
 
+
 #include "headers.h"
 
+
+
+void Info(fileNameAndOperation *file_or_folder_details){
+
+
+        // fileNameAndOperation file_or_folder_details;
+
+        // Displaying all options in the terminal of the client side.
+        printf("Choose one number from below:\n");
+        printf("-------------------------------\n");
+        printf("1 - Reading a File\n");
+        printf("2 - Writing a File\n");
+        printf("3 - Deleting a File\n");
+        printf("4 - Creating a File\n");
+        printf("5 - Getting Additional information of File \n");
+        printf("6 - Getting Additional information of Folder\n");
+        printf("7 - Listing all Files and Folders\n");
+        printf("8 - Deleting a Folder\n");
+        printf("9 - Creating a Folder\n");
+        printf("-------------------------------\n");
+
+        printf("Enter the number:");
+        int option_choosing_number; 
+        scanf("%d", &(file_or_folder_details->operation_number));
+
+        if ( file_or_folder_details->operation_number <= 5){ 
+                printf("Enter the file name: ");
+        }
+        else{
+                printf("Enter the Folder name: ");
+        }
+        scanf("%s", file_or_folder_details->name_of_file_or_folder);
+}
 
 int main(){
       
 
 
     char ip[100] = "127.0.0.1";
+    int port=4000; // = PORT;
 
     int client_socket;
     struct sockaddr_in client_address;
@@ -63,7 +98,7 @@ int main(){
             
              //create socket for Storage Server
              strcpy(ip, reply.IP);
-            port = reply.port;
+             port = reply.port;
 
             int client_socket;
             struct sockaddr_in client_address;
@@ -94,38 +129,18 @@ int main(){
             printf("\nWait till the response from SS\n");
 
             
-            acknowledgmentMessage ack_fromSS;
-            int flag=1;
-            while(1){
-             recv(client_socket,&ack_fromSS ,sizeof(ack_fromSS), 0);
-             //print 
-            //              char status_message[MAX_LENGTH];
-            // Packet file_or_folder_content[MAX_LENGTH];
-            // folderInformation folder_information;
-                 printf("%s",ack_fromSS.status_message);
+            client_receving_data(client_socket,file_or_folder_details); //does communicate with SS
 
-                 if(strcmp(ack_fromSS.status_message,"STOP")==0){
-                    flag=0;
-                 }
-
-                 //--** PRINT folder_information
-                 //--** PRINT  file_or_folder_content[MAX_LENGTH]
-            
-            
-            }
-
-            //STOP
+           
             close(client_socket);
             printf("Disconnected from the Storage Server.\n");
 
             
 
 
-
-
-          }        
  
 
+          }        
           
          
          
@@ -134,4 +149,3 @@ int main(){
   return 0;
 
 }
-
