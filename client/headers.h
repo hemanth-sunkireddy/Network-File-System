@@ -27,6 +27,7 @@ typedef struct NS{
     int SS_no;
 }NS_reply;
 
+
 typedef struct fileNameAndOperation{
     int operation_number; 
     char name_of_file_or_folder[MAX_LENGTH];
