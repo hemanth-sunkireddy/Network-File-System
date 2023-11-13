@@ -47,7 +47,15 @@ void start_listening(list_of_all_storage_servers *database) {
     }
 }
 
+
+void main_storage_server_initialisation(){
+    // Initialisation of main storage server need to be implement. (Implementing)
+}
+
 int main() {
+
+    main_storage_server_initialisation();
+    
     socklen_t address_size;
 
     list_of_all_storage_servers huge_database;
