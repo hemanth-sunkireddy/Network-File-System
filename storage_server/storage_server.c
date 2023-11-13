@@ -65,11 +65,15 @@ int main() {
         // Accept the client_socket
         for (int i = 0; i < CURRENT_STORAGE_SERVERS_COUNT; i++) {
             address_size = sizeof(huge_database.individual_storage_server[i].client_address);
-            huge_database.individual_storage_server[i].client_socket =
-                accept(huge_database.individual_storage_server[i].server_socket,
-                       (struct sockaddr *)&huge_database.individual_storage_server[i].client_address, &address_size);
+            huge_database.individual_storage_server[i].client_socket =accept(huge_database.individual_storage_server[i].server_socket, (struct sockaddr *)&huge_database.individual_storage_server[i].client_address, &address_size);
             printf("Client connected to %d storage server.\n", i);
             printf("Wait till the client sends to the request:\n");
+            
+
+            acknowledgmentMessage message_status;
+            // Recieve the request
+            message_status =  receive_client_request(huge_database.individual_storage_server[i].client_socket, message_status);
+            printf("%s\n", message_status.status_message);
         }
     }
 
