@@ -28,6 +28,18 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
 
 
     
+    char final_path_after_appending_storage_server_number[MAX_LENGTH];
+    strcpy(final_path_after_appending_storage_server_number, "SS");
+
+    char operation_number_in_string[MAX_LENGTH];
+    sprintf(operation_number_in_string, "%d", file_or_folder_details.storage_server_number);
+
+    strcat(final_path_after_appending_storage_server_number, operation_number_in_string);
+    strcat(final_path_after_appending_storage_server_number, file_or_folder_details.name_of_file_or_folder);
+
+    printf("Final path along with server: %s\n", final_path_after_appending_storage_server_number);
+
+    
 
     // Just checking the return status with some copy. 
     strcpy(message_status.status_message, "Just checking whether the details recieved successfully or not.\n");
