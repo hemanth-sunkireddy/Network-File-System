@@ -1,10 +1,15 @@
-#include "../headers.h"
+#include "headers.h"
 
 char *ip = "127.0.0.1";
 int port = PORT;
 char message[1024];
 int main(){
 
+   SS_Info ssx[MAX_STORAGE_SERVERS];
+  for (int i = 0; i < CURRENT_STORAGE_SERVERS; i++){
+    ssx[i].SS_port = PORT + i;
+    printf("Storage server %d number connected to port number %d\n", i, PORT + i);
+  }
   int nm_server_socket, ss_socket;
   struct sockaddr_in nm_server_address, ss_address;
   socklen_t address_size;
@@ -22,7 +27,7 @@ int main(){
 
   memset(&nm_server_address, '\0', sizeof(nm_server_address));
   nm_server_address.sin_family = AF_INET;
-  nm_server_address.sin_port = port;
+  nm_server_address.sin_port = NAMING_SERVER_MAIN_PORT;
   nm_server_address.sin_addr.s_addr = inet_addr(ip);
   
   // Bind the server socket.
@@ -33,7 +38,7 @@ int main(){
     exit(1);
   }
   else{
-    printf("Binded to the port number: %d\n", port);
+    printf("Binded to the port number: %d\n", NAMING_SERVER_MAIN_PORT);
   }
 
   while(1){
@@ -53,19 +58,25 @@ int main(){
         acknowledgmentMessage message_status;
 
 
+
+        fileNameAndOperation client_operation_number_path_name; 
+        recv(ss_socket, &client_operation_number_path_name, sizeof(fileNameAndOperation), 0);
+        
+        strcpy(message_status.status_message, "Just routing successful.");
+        send(ss_socket, message_status.status_message, MAX_LENGTH, 0);
          
 
-        // Recieve the request
-        message_status = receive_initialized_ss_info(ss_socket, message_status);
-        printf("%s\n", message_status.status_message);
+        // // Recieve the request
+        // message_status = receive_initialized_ss_info(ss_socket, message_status);
+        // printf("%s\n", message_status.status_message);
       
         
-        // Sending the response
-        //send_server_request(message_status, ss_socket);
+        // // Sending the response
+        // //send_server_request(message_status, ss_socket);
 
-        // CLose the socket
-        close(ss_socket);
-        printf("Client disconnected.\n\n");
+        // // CLose the socket
+        // close(ss_socket);
+        // printf("Client disconnected.\n\n");
   }
 
 
