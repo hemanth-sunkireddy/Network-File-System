@@ -18,20 +18,26 @@
 #include <time.h>
 
 #define PORT 5000
+#define NAMING_SERVER_MAIN_PORT 4000
 #define MAX_LENGTH 1024 
+#define MAX_STORAGE_SERVERS 1024
+#define MAX_PATH_LENGTH 10
+#define MAX_FOLDER_OR_FILE_LIMIT 10
+#define CURRENT_STORAGE_SERVERS 4
 
 static int ss_new_no=0;
 
 typedef struct accessible_path{
-    char path[MAX_LENGTH];
+    char path[MAX_PATH_LENGTH];
 }accessible_path;
 
 typedef struct SS_Info{
     char ip[20];
-    int NM_port;
+    int SS_port;
     int client_port;
     int storage_server_number;
-    accessible_path paths_accessible[MAX_LENGTH];
+    accessible_path paths_accessible[MAX_FOLDER_OR_FILE_LIMIT];
+    int num_of_paths;
 }SS_Info;
 
 typedef struct Packet
@@ -66,8 +72,8 @@ typedef struct fileNameAndOperation{
 
 acknowledgmentMessage receive_initialized_ss_info(int client_socket, struct acknowledgmentMessage message_status);
 
-// extern char *ip ;
-// extern int port;
+extern char *ip ;
+extern int port;
 
 
 #endif
