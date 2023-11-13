@@ -44,6 +44,42 @@ typedef struct list_of_all_storage_servers{
 }list_of_all_storage_servers;
 
 
-// void storage_server_initiate(list_of_all_storage_servers SS_database);
+typedef struct fileNameAndOperation{
+    int storage_server_number;
+    int operation_number; 
+    char name_of_file_or_folder[MAX_LENGTH];
+    int naming_server_or_client;   // 0 for client, 1 for naming server. 
+}fileNameAndOperation;
+
+
+typedef struct Packet
+{
+    int total_chunks;
+    char data[MAX_LENGTH];
+} Packet;
+
+typedef struct folderInformation{
+    char folder_name[MAX_LENGTH];
+    int size; 
+    char Permissions[MAX_LENGTH];
+    char last_modified_time[MAX_LENGTH];
+    char created_time[MAX_LENGTH];
+    char parent_folder[MAX_LENGTH];
+    float total_size_of_folder_in_KB;
+    int total_files;
+    int total_folders;
+}folderInformation;
+
+
+typedef struct acknowledgmentMessage{
+    int operation_number;
+    char status_message[MAX_LENGTH];
+    Packet file_or_folder_content[MAX_LENGTH];
+    folderInformation folder_information;
+}acknowledgmentMessage;
+
+
+acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status);
+
 
 #endif

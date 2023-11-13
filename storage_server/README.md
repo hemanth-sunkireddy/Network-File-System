@@ -10,5 +10,17 @@
 3. For Now, Fixed storage servers count is 4. (Initialised 4 storage servers.)
 4. And I am creating four folders for 4 storage servers in the root directory of storage_server to seperate them easily. 
 5. Added basic code of initialisation of all storage servers. 
-6. Implementing routings. (Working on this.)
 
+
+### Implementation of recieving requests. 
+1. Working on only one naming server, one client for now. ( Multiple clients will implement later.)
+2. Initially, Client connects with particular socket of storage server. The request contains fileNameAndOperation struct. ( i.e; operation_number, Path, Storage    server number, integer value for whether naming server or client connected).
+3. naming_server_or_client = 0 represents client connected. else, naming_server_or_client = 1 represents naming server connected in the fileNameAndOperation struct. 
+4. Later going to the respective storage server and perform the operation mentioned.
+
+
+### Handling multiple clients to different storage servers. 
+1. May use select() to solve this issue. 
+
+### Handling multiple clients to same storage server. 
+1. May be select() function or multi_threading implementation. 
