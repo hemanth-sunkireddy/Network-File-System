@@ -17,9 +17,8 @@
 
 #define MAX_LENGTH 1024
 
-// char *ip;// = "127.0.0.1";
-int port=4000; // = PORT;
-char message[MAX_LENGTH];
+
+// char message[MAX_LENGTH];
 
 typedef struct NS{
     int port;
@@ -33,39 +32,6 @@ typedef struct fileNameAndOperation{
     char name_of_file_or_folder[MAX_LENGTH];
 }fileNameAndOperation;
 
-
-
-void Info(fileNameAndOperation *file_or_folder_details){
-
-
-        // fileNameAndOperation file_or_folder_details;
-
-        // Displaying all options in the terminal of the client side.
-        printf("Choose one number from below:\n");
-        printf("-------------------------------\n");
-        printf("1 - Reading a File\n");
-        printf("2 - Writing a File\n");
-        printf("3 - Deleting a File\n");
-        printf("4 - Creating a File\n");
-        printf("5 - Getting Additional information of File \n");
-        printf("6 - Getting Additional information of Folder\n");
-        printf("7 - Listing all Files and Folders\n");
-        printf("8 - Deleting a Folder\n");
-        printf("9 - Creating a Folder\n");
-        printf("-------------------------------\n");
-
-        printf("Enter the number:");
-        int option_choosing_number; 
-        scanf("%d", &(file_or_folder_details->operation_number));
-
-        if ( file_or_folder_details->operation_number <= 5){ 
-                printf("Enter the file name: ");
-        }
-        else{
-                printf("Enter the Folder name: ");
-        }
-        scanf("%s", file_or_folder_details->name_of_file_or_folder);
-}
 
 
 typedef struct Packet
@@ -94,7 +60,7 @@ typedef struct acknowledgmentMessage{
 }acknowledgmentMessage;
 
 
-
+void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details);
 
 
 
