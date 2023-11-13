@@ -32,10 +32,7 @@ typedef struct fileNameAndOperation{
     char name_of_file_or_folder[MAX_LENGTH];
 }fileNameAndOperation;
 
-typedef struct NS{
-    int port;
-    char IP[100];
-}NS_reply;
+
 
 void Info(fileNameAndOperation *file_or_folder_details){
 
