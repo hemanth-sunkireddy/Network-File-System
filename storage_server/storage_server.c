@@ -76,12 +76,15 @@ int main() {
             huge_database.individual_storage_server[i].client_socket =accept(huge_database.individual_storage_server[i].server_socket, (struct sockaddr *)&huge_database.individual_storage_server[i].client_address, &address_size);
             printf("Client connected to %d storage server.\n", i);
             printf("Wait till the client sends to the request:\n");
-            
 
-            acknowledgmentMessage message_status;
-            // Recieve the request
-            message_status =  receive_client_request(huge_database.individual_storage_server[i].client_socket, message_status);
-            printf("%s\n", message_status.status_message);
+            char message_status[MAX_LENGTH];
+            recv(huge_database.individual_storage_server[0].client_socket, message_status, MAX_LENGTH, 0);
+
+            printf("MESSAGE FROM NAMING SERVER: %s\n", message_status);
+            // acknowledgmentMessage message_status;
+            // // Recieve the request
+            // message_status =  receive_client_request(huge_database.individual_storage_server[i].client_socket, message_status);
+            // printf("%s\n", message_status.status_message);
         }
     }
 

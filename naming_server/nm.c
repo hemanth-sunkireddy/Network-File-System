@@ -62,12 +62,39 @@ int main(){
         fileNameAndOperation client_operation_number_path_name; 
         recv(ss_socket, &client_operation_number_path_name, sizeof(fileNameAndOperation), 0);
         
+        // If operation number == create or delete
+        // Suppose path found in first storage server. 
+
+        int port_need_to_connect = ssx[0].SS_port;
+        int client_socket;
+        struct sockaddr_in client_address;
+        socklen_t client_address_size;
+        client_socket = socket(AF_INET, SOCK_STREAM, 0);
+          if (client_socket < 0){
+            perror("Socket error");
+            exit(1);
+          }
+          else{
+            printf("TCP CLIENT SOCKET CREATED for NS.\n");
+          }
+
+          memset(&client_address, '\0', sizeof(client_address));
+          client_address.sin_family = AF_INET;
+          client_address.sin_port = ssx[0].SS_port;
+          client_address.sin_addr.s_addr = inet_addr(ip);
+
+          // Connect to the server
+          connect(client_socket, (struct sockaddr*)&client_address, sizeof(client_address));
+          printf("Connected to the server .\n\n");
+          
+
         strcpy(message_status.status_message, "Just routing successful.");
-        send(ss_socket, message_status.status_message, MAX_LENGTH, 0);
+        //obtain_ss_info(ss_socket,message_status,)
+        //send(client_socket, message_status.status_message, MAX_LENGTH, 0);
          
 
         // // Recieve the request
-        // message_status = receive_initialized_ss_info(ss_socket, message_status);
+        message_status = obtain_ss_info(ss_socket, message_status,client_operation_number_path_name.name_of_file_or_folder,client_operation_number_path_name.operation_number);
         // printf("%s\n", message_status.status_message);
       
         

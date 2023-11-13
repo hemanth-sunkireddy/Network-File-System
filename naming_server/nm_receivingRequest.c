@@ -83,10 +83,13 @@ void CreateandDeleteOperation(int client_socket, struct acknowledgmentMessage me
     }
 }
 
-acknowledgmentMessage receive_initialized_ss_info(int ss_socket, acknowledgmentMessage message_status) {
+acknowledgmentMessage obtain_ss_info(int ss_socket, acknowledgmentMessage message_status, char* path, fileNameAndOperation operation_and_fileorfolder_name){
+    if(operation_and_fileorfolder_name.operation_number){
+
+    }
     SS_Info ssx;
     ssx.paths_accessible[10];
-
+    
 
     strcpy(message_status.status_message, "Storage server info received successfully");
     printf("IP: %s\n", ssx.ip);
