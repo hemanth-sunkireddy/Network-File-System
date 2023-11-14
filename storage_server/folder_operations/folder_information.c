@@ -31,7 +31,7 @@ long long calculateTotalSize(const char *folderPath) {
             continue;
         }
 
-        char path[MAX_LENGTH_OF_PATH];
+        char path[MAX_LENGTH];
         snprintf(path, sizeof(path), "%s/%s", folderPath, entry->d_name);
         totalSize += calculateTotalSize(path);
     }
