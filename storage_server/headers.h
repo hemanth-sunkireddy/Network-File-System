@@ -82,6 +82,7 @@ typedef struct acknowledgmentMessage{
     char status_message[MAX_LENGTH];
     Packet file_or_folder_content[MAX_LENGTH];
     folderInformation folder_information;
+    fileInformation file_information;
 }acknowledgmentMessage;
 
 acknowledgmentMessage deleting_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
