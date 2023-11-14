@@ -31,7 +31,7 @@ long long calculateTotalSize(const char *folderPath) {
             continue;
         }
 
-        char path[PATH_MAX];
+        char path[MAX_LENGTH_OF_PATH];
         snprintf(path, sizeof(path), "%s/%s", folderPath, entry->d_name);
         totalSize += calculateTotalSize(path);
     }
@@ -106,7 +106,7 @@ acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENG
 
 
         // Parent folder
-        char parentFolder[PATH_MAX];
+        char parentFolder[MAX_LENGTH_OF_PATH];
         if (realpath(folderPath, parentFolder) != NULL) {
             char *lastSlash = strrchr(parentFolder, '/');
             if (lastSlash != NULL) {

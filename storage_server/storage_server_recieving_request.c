@@ -65,7 +65,7 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
             return message_status;
         }
         else if (operation_number == 7 ){
-            message_status = listing_all_files_amd_folders(final_path_after_appending_storage_server_number, message_status);
+            message_status = listing_all_files_and_folders(final_path_after_appending_storage_server_number, message_status);
             return message_status;
         }
         // rest of the operations.

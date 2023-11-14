@@ -23,6 +23,7 @@
 #define FIRST_IP_ADDRESS 1
 #define CURRENT_STORAGE_SERVERS_COUNT 4
 #define MAX_CLIENTS_FOR_SERVER 1024
+#define MAX_LENGTH_OF_PATH 10
 
 extern char *ip ;
 extern int port;
@@ -76,7 +77,7 @@ typedef struct fileInformation{
 }fileInformation;
 
 typedef struct directory_or_file_name{
-    char file_or_folder_name[MAX_LENGTH];
+    char file_or_folder_name[MAX_LENGTH_OF_PATH];
 }directory_or_file_name;
 
 typedef struct list_in_given_path{
