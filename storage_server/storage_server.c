@@ -69,8 +69,6 @@ int main() {
 
     while (1) {
         printf("Wait till the client connects:\n");
-
-
         // Accept the client_socket
         for (int index_of_storage_server = 0; index_of_storage_server < CURRENT_STORAGE_SERVERS_COUNT; index_of_storage_server++) {
             address_size = sizeof(huge_database.individual_storage_server[index_of_storage_server].client_address);
@@ -83,15 +81,8 @@ int main() {
             fileNameAndOperation details_of_operation;
 
             // Recieve the request
-             recv(huge_database.individual_storage_server[index_of_storage_server].client_socket, &details_of_operation, MAX_LENGTH, 0);
-            printf("client/namingServer Asked for this file / folder: %s\n", details_of_operation.name_of_file_or_folder);
-
-            int operation_number = details_of_operation.operation_number; 
-
-            printf("The operation number he had choosen.:%d\n", operation_number);
-
-            // message_status =  receive_client_request(huge_database.individual_storage_server[index_of_storage_server].client_socket, message_status, index_of_storage_server);
-            // printf("OPERATION STATUS: %s\n", message_status.status_message);
+            message_status =  receive_client_request(huge_database.individual_storage_server[index_of_storage_server].client_socket, message_status, index_of_storage_server);
+            printf("OPERATION STATUS: %s\n", message_status.status_message);
 
             // Send the Response 
             send_server_request(message_status, huge_database.individual_storage_server[index_of_storage_server].client_socket);
@@ -104,3 +95,7 @@ int main() {
 
     return 0;
 }
+
+
+
+

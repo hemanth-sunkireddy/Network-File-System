@@ -17,7 +17,7 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     strcpy(final_path_after_appending_storage_server_number, "SS");
 
     char operation_number_in_string[MAX_LENGTH];
-    sprintf(operation_number_in_string, "%d", file_or_folder_details.storage_server_number);
+    sprintf(operation_number_in_string, "%d", index_of_storage_server + 1);
 
     strcat(final_path_after_appending_storage_server_number, operation_number_in_string);
 

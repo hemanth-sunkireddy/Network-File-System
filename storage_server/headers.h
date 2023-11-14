@@ -46,11 +46,8 @@ typedef struct list_of_all_storage_servers{
 
 
 typedef struct fileNameAndOperation{
-    int storage_server_number;
     int operation_number; 
     char name_of_file_or_folder[MAX_LENGTH];
-    int naming_server_or_client;   // 0 for client, 1 for naming server. 
-    int create_or_not_create_new_SS_status;  // 0 referes no need to create new SS, 1 refers to create new SS. 
 }fileNameAndOperation;
 
 
