@@ -20,7 +20,6 @@
 #define  MAX_LENGTH 1024
 #define MAX_STORAGE_SERVERS 1024
 #define FIRST_STORAGE_SERVER_PORT 5000
-#define MAIN_SToRAGE_SERVER 4999
 #define FIRST_IP_ADDRESS 1
 #define CURRENT_STORAGE_SERVERS_COUNT 4
 #define MAX_CLIENTS_FOR_SERVER 1024
@@ -76,6 +75,16 @@ typedef struct fileInformation{
     int file_group;
 }fileInformation;
 
+typedef struct directory_or_file_name{
+    char file_or_folder_name[MAX_LENGTH];
+}directory_or_file_name;
+
+typedef struct list_in_given_path{
+  int total_number_of_files_or_folders;
+  directory_or_file_name names_of_file_or_folder[MAX_LENGTH];
+}list_in_given_path;
+
+
 
 typedef struct acknowledgmentMessage{
     int operation_number;
@@ -83,6 +92,7 @@ typedef struct acknowledgmentMessage{
     Packet file_or_folder_content[MAX_LENGTH];
     folderInformation folder_information;
     fileInformation file_information;
+    list_in_given_path list_of_folder;
 }acknowledgmentMessage;
 
 acknowledgmentMessage deleting_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status);
@@ -92,7 +102,7 @@ acknowledgmentMessage creating_the_folder(char folder_name[MAX_LENGTH], acknowle
 acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage reading_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status); 
 acknowledgmentMessage additional_information_of_file(char file_name[MAX_LENGTH], acknowledgmentMessage message_status);
-
+acknowledgmentMessage listing_all_files_and_folders(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 
 acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server);
 void send_server_request(acknowledgmentMessage message_status, int client_socket);
