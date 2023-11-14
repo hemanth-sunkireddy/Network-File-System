@@ -69,6 +69,13 @@ typedef struct folderInformation{
     int total_folders;
 }folderInformation;
 
+typedef struct fileInformation{
+    long int file_size;
+    unsigned int file_inode_number;
+    int file_owner;
+    int file_group;
+}fileInformation;
+
 
 typedef struct acknowledgmentMessage{
     int operation_number;
