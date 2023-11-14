@@ -52,6 +52,15 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     else{
         printf("Client connected.\n");
          // Just checking the return status with the client connections. 
+        if ( operation_number == 1 ){
+            message_status = reading_the_file(final_path_after_appending_storage_server_number, message_status);
+            return message_status;
+        }
+        else if (operation_number == 6 ){
+            message_status = additional_information_of_folder(final_path_after_appending_storage_server_number, message_status);
+            return message_status;
+        }
+        // rest of the operations.
         strcpy(message_status.status_message, "Just sending acknowledgment successful to client connections..\n");
         return message_status;
     }
