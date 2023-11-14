@@ -45,6 +45,12 @@ acknowledgmentMessage additional_information_of_file(char file_name[MAX_LENGTH],
             printf("File Group: %d\n", file_stat.st_gid);
             printf("File Inode Number: %lu\n", file_stat.st_ino);
             printf("File Device ID: %lx\n", file_stat.st_dev);
+
+            // copying the file information details to the acknowledgment message.
+            strcpy(message_status.file_information.file_size, file_stat.st_size);
+            strcpy(message_status.file_information.file_owner, file_stat.st_uid);
+            strcpy(message_status.file_information.file_group, file_stat.st_gid);
+            strcpy(message_status.file_information.file_inode_number, file_stat.st_ino);
     }
     return message_status;
 }
