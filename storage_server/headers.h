@@ -104,6 +104,7 @@ acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENG
 acknowledgmentMessage reading_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status); 
 acknowledgmentMessage additional_information_of_file(char file_name[MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage listing_all_files_and_folders(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
+acknowledgmentMessage writing_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status, char data_from_client[MAX_LENGTH]);
 
 acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server);
 void send_server_request(acknowledgmentMessage message_status, int client_socket);

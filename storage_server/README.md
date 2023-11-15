@@ -15,9 +15,9 @@
 ### Implementation of recieving requests. 
 1. Working on only one naming server, one client for now. ( Multiple clients will implement later.)
 2. Initially, Client connects with particular socket of storage server. The request contains fileNameAndOperation struct. ( i.e; operation_number, Path, Storage    server number, integer value for whether naming server or client connected).
-3. naming_server_or_client = 0 represents client connected. else, naming_server_or_client = 1 represents naming server connected in the fileNameAndOperation struct. 
-4. Later going to the respective storage server and perform the operation mentioned.
-5. How to find naming server/ client connected using operation number he is sending. If operation number == 3 || 4 || 8 || 9 then naming server connected, else client connnected.
+3. For the create and delete operation, naming server will connects directly to the respective storage server. 
+4. For the rest of the operations, Client will directly connect to the respective storage server. 
+
 ### Individual Operations 
 #### 1. Reading a File
 1. Client will choose operation 1. 
@@ -28,7 +28,10 @@
 6. And the data in the respective sub chunks of message_status.file_or_folder_content[i].data.
 
 #### 2. Writing a File 
-1. Need to implement.
+1. Client connects to the storage server and sends the path of the file. 
+2. And again client sends the data to the storage server that what need to write to the file. 
+3. Storage server recieves the data and write the data to the file. 
+4. Then storage server sends acknowledgment status to the client. 
 
 #### 3. Deleting a File 
 1. Naming server asks to delete a file by giving the path.
@@ -69,6 +72,11 @@
 5. While creating the folder, Permissions of the parent folder checking. If parent folder has no written permission, then error.
 6. Also implemented other errors. (Need to document here properly later.)
 
+### Dynamically creating New storage servers. 
+1. First, all storage servers will be in listen state. and current storage server count is maintained. 
+2. If Naming server wants to connects to the stoarage server which is not initialised then dynamically new storage server will be created with number on the port. and increment count of the storage server. 
+3. After initialisation of the new storage server perform the operation requested by the naming server. 
+4. Send the acknowledgment message to the naming server. 
 
 
 ### Handling multiple clients to different storage servers. 

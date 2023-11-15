@@ -68,6 +68,11 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
             message_status = listing_all_files_and_folders(final_path_after_appending_storage_server_number, message_status);
             return message_status;
         }
+        else if ( operation_number == 2){
+            char data_from_client[MAX_LENGTH];
+            recv(client_socket, &data_from_client, MAX_LENGTH, 0);
+            message_status = writing_the_file(final_path_after_appending_storage_server_number, message_status, data_from_client);
+        }
         // rest of the operations.
         strcpy(message_status.status_message, "Just sending acknowledgment successful to client connections..\n");
         return message_status;
