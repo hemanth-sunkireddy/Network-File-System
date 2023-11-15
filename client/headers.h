@@ -16,7 +16,7 @@
 #include <time.h>
 
 #define MAX_LENGTH 1024
-
+#define MAX_LENGTH_OF_PATH 10
 
 // char message[MAX_LENGTH];
 
@@ -52,12 +52,34 @@ typedef struct folderInformation{
     int total_folders;
 }folderInformation;
 
+typedef struct fileInformation{
+    long int file_size;
+    unsigned int file_inode_number;
+    int file_owner;
+    int file_group;
+}fileInformation;
+
+typedef struct directory_or_file_name{
+    char file_or_folder_name[MAX_LENGTH_OF_PATH];
+}directory_or_file_name;
+
+typedef struct list_in_given_path{
+  int total_number_of_files_or_folders;
+  directory_or_file_name names_of_file_or_folder[MAX_LENGTH];
+}list_in_given_path;
+
+
+
 typedef struct acknowledgmentMessage{
     int operation_number;
     char status_message[MAX_LENGTH];
     Packet file_or_folder_content[MAX_LENGTH];
     folderInformation folder_information;
+    fileInformation file_information;
+    list_in_given_path list_of_folder;
 }acknowledgmentMessage;
+
+
 
 
 void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details);

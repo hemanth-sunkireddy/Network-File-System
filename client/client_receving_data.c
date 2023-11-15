@@ -25,7 +25,7 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
             printf("%s", buffer);
         }
 
-        printf("Read response successfully.\n");
+        printf("\nRead response successfully.\n");
     }
     if ( file_or_folder_details.operation_number == 2){
         //writing
@@ -47,31 +47,48 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
     }
     if ( file_or_folder_details.operation_number == 5){
         //filr info
+         acknowledgmentMessage message_status;
+        if(recv(client_socket,&message_status,sizeof(message_status),0)==-1){
+            printf("error in getting folder data\n");
+        }
+        printf("File Group: %d\n",message_status.file_information.file_group);
+        printf("File inode number: %u\n",message_status.file_information.file_inode_number);
+        printf("File owner: %d\n",message_status.file_information.file_owner);
+        printf("File size: %ld\n",message_status.file_information.file_size);
+
 
     }
     if ( file_or_folder_details.operation_number == 6){
         //folder inf 
-        folderInformation folderinfo;
-        if(recv(client_socket,&folderinfo,sizeof(folderinfo),0)==-1){
+        acknowledgmentMessage message_status;
+        if(recv(client_socket,&message_status,sizeof(message_status),0)==-1){
             printf("error in getting folder data\n");
         }
-        //print data
         
-        printf("%s\n ",folderinfo.folder_name);
-        printf("%d\n ",folderinfo.size);
-        printf("%s\n ",folderinfo.Permissions);
-        printf("%s\n ",folderinfo.last_modified_time);
-        printf("%s\n ",folderinfo.created_time);
-        printf("%s\n ",folderinfo.parent_folder);
-        printf("%f\n ",folderinfo.total_size_of_folder_in_KB);
-        printf("%d\n ",folderinfo.total_files);
-        printf("%d\n ",folderinfo.total_folders);
+        printf("Folder name: %s\n ",message_status.folder_information.folder_name);
+        printf("Size: %d\n ",message_status.folder_information.size);
+        printf("Permissions: %s\n ",message_status.folder_information.Permissions);
+        printf("Last Modified Time: %s\n ",message_status.folder_information.last_modified_time);
+        printf("created Time: %s\n ",message_status.folder_information.created_time);
+        printf("Parent Folder: %s\n ",message_status.folder_information.parent_folder);
+        printf("Total Size in KB: %f\n ",message_status.folder_information.total_size_of_folder_in_KB);
+        printf("Total Files: %d\n ",message_status.folder_information.total_files);
+        printf("Total Folders: %d\n ",message_status.folder_information.total_folders);
 
 
 
     }
     if ( file_or_folder_details.operation_number == 7){
         //listing file or folder
+        acknowledgmentMessage message_status;
+        if(recv(client_socket,&message_status,sizeof(message_status),0)==-1){
+            printf("error in getting folder data\n");
+        }
+
+        printf("Total Contents %d\n",message_status.list_of_folder.total_number_of_files_or_folders);
+        for(int i=0;i<message_status.list_of_folder.total_number_of_files_or_folders;i++){
+            printf("%d)  %s\n",i+1,message_status.list_of_folder.names_of_file_or_folder[i].file_or_folder_name);
+        }
 
     }
 
