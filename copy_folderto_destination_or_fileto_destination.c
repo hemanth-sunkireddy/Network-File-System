@@ -74,10 +74,18 @@ void copyDirectory(const char *sourcePath, const char *destinationPath) {
 }
 
 int main() {
+    
     // Use absolute paths for testing
+    //1   Folder Paths
     char sourcePath[MAX_PATH_LENGTH] = "/home/popos/Cp"; // Change this to a valid source path
     char destinationPath[MAX_PATH_LENGTH] = "/home/popos/OSN/Concurrency"; // Change this to a valid destination path
 
+
+     //2  FILE PATHS: ## mention file.txt in destination path
+    char sourcePath[MAX_PATH_LENGTH] = "/home/popos/sql.txt"; // Change this to a valid source path
+    char destinationPath[MAX_PATH_LENGTH] = "/home/popos/OSN/Concurrency/sql.txt"; // Change this to a valid destination path
+
+    
     DIR *dir = opendir(sourcePath);
     if (dir) {
         closedir(dir);
