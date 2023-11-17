@@ -1,6 +1,11 @@
 # OSN COURSE PROJECT 
 
-1. Our work is available in template_code.
+
+## How to Run 
+1. Run make in the final_project_73 root directory.
+2. For storage server activation. Run /storage_server_run in the root directory. 
+3. For naming server activation. Run /naming_server_run in the root directory. 
+4. For client activation. Run /client_run in the root directory. 
 
 ### Storage server
 1. In README file of storage_server folder. 
