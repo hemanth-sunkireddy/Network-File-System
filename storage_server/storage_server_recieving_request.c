@@ -1,7 +1,14 @@
 #include "headers.h"
 
-acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server)
+acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server,int* current_storage_servers)
 {   
+    int current_storage_server_temp = *current_storage_servers;
+    if ( index_of_storage_server == current_storage_server_temp){
+        current_storage_servers++;
+         int status = mkdir("SS5", 0755);
+         printf("New storage server created successfully.\n");
+    }
+    printf("Current storage servers after connection. %d\n", current_storage_server_temp);
     fileNameAndOperation file_or_folder_details;
 
     recv(client_socket, &file_or_folder_details, MAX_LENGTH, 0);
@@ -11,7 +18,7 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
 
     printf("The operation number he had choosen.:%d\n", operation_number);
 
-
+    message_status.operation_number = file_or_folder_details.operation_number; 
     
     char final_path_after_appending_storage_server_number[MAX_LENGTH];
     strcpy(final_path_after_appending_storage_server_number, "SS");

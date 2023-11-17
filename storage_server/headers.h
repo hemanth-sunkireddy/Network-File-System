@@ -18,12 +18,13 @@
 #include <time.h>
 
 #define  MAX_LENGTH 1024
-#define MAX_STORAGE_SERVERS 1024
+#define MAX_STORAGE_SERVERS 10
 #define FIRST_STORAGE_SERVER_PORT 5000
 #define FIRST_IP_ADDRESS 1
 #define CURRENT_STORAGE_SERVERS_COUNT 4
 #define MAX_CLIENTS_FOR_SERVER 1024
 #define MAX_LENGTH_OF_PATH 10
+
 
 extern char *ip ;
 extern int port;
@@ -49,6 +50,7 @@ typedef struct fileNameAndOperation{
     int operation_number; 
     char name_of_file_or_folder[MAX_LENGTH];
 }fileNameAndOperation;
+
 
 
 typedef struct Packet
@@ -106,7 +108,7 @@ acknowledgmentMessage additional_information_of_file(char file_name[MAX_LENGTH],
 acknowledgmentMessage listing_all_files_and_folders(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage writing_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status, char data_from_client[MAX_LENGTH]);
 
-acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server);
+acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server, int* current_storage_servers);
 void send_server_request(acknowledgmentMessage message_status, int client_socket);
 
 

@@ -3,7 +3,7 @@
 char *ip = "127.0.0.1";
 
 void create_socket(list_of_all_storage_servers *database) {
-    for (int i = 0; i < CURRENT_STORAGE_SERVERS_COUNT; i++) {
+    for (int i = 0; i < MAX_STORAGE_SERVERS; i++) {
         database->individual_storage_server[i].storage_server_number = i + 1;
         database->individual_storage_server[i].server_socket = socket(AF_INET, SOCK_STREAM, 0);
         if (database->individual_storage_server[i].server_socket < 0) {
@@ -17,7 +17,7 @@ void create_socket(list_of_all_storage_servers *database) {
 void bind_socket(list_of_all_storage_servers *database) {
     int bind_check;
 
-    for (int i = 0; i < CURRENT_STORAGE_SERVERS_COUNT; i++) {
+    for (int i = 0; i < MAX_STORAGE_SERVERS; i++) {
         memset(&database->individual_storage_server[i].server_address, '\0', sizeof(database->individual_storage_server[i].server_address));
         database->individual_storage_server[i].server_address.sin_family = AF_INET;
         database->individual_storage_server[i].server_address.sin_port = FIRST_STORAGE_SERVER_PORT + i;
@@ -32,12 +32,15 @@ void bind_socket(list_of_all_storage_servers *database) {
             printf("%d server Binded to port number %d successfully.\n", i, FIRST_STORAGE_SERVER_PORT + i);
         }
     }
+    for ( int i = 0; i < MAX_STORAGE_SERVERS; i++ ) { 
+        // printf("%d server Binded to IP number %s successfully.\n", i, )
+    }
 }
 
 void start_listening(list_of_all_storage_servers *database) {
     int listen_check;
 
-    for (int i = 0; i < CURRENT_STORAGE_SERVERS_COUNT; i++) {
+    for (int i = 0; i < MAX_STORAGE_SERVERS; i++) {
         listen_check = listen(database->individual_storage_server[i].server_socket, MAX_CLIENTS_FOR_SERVER);
         if (listen_check < 0) {
             printf("Listen error for %d server\n", i);
@@ -54,7 +57,9 @@ void main_storage_server_initialisation(){
 
 int main() {
 
-    main_storage_server_initialisation();
+    int current_storage_servers = 4; 
+    int* pointer_to_current_storage_servers = &current_storage_servers;
+    // main_storage_server_initialisation();
     
     socklen_t address_size;
 
@@ -70,7 +75,7 @@ int main() {
     while (1) {
         printf("Wait till the client connects:\n");
         // Accept the client_socket
-        for (int index_of_storage_server = 0; index_of_storage_server < CURRENT_STORAGE_SERVERS_COUNT; index_of_storage_server++) {
+        for (int index_of_storage_server = 0; index_of_storage_server < MAX_STORAGE_SERVERS; index_of_storage_server++) {
             address_size = sizeof(huge_database.individual_storage_server[index_of_storage_server].client_address);
             huge_database.individual_storage_server[index_of_storage_server].client_socket =accept(huge_database.individual_storage_server[index_of_storage_server].server_socket, (struct sockaddr *)&huge_database.individual_storage_server[index_of_storage_server].client_address, &address_size);
             printf("namingServer/Client connected to %d storage server.\n", index_of_storage_server);
@@ -81,9 +86,9 @@ int main() {
             fileNameAndOperation details_of_operation;
 
             // Recieve the request
-            message_status =  receive_client_request(huge_database.individual_storage_server[index_of_storage_server].client_socket, message_status, index_of_storage_server);
+            message_status =  receive_client_request(huge_database.individual_storage_server[index_of_storage_server].client_socket, message_status, index_of_storage_server, pointer_to_current_storage_servers);
             printf("OPERATION STATUS: %s\n", message_status.status_message);
-
+            printf("Current storage servers after addding one new storage server.%d\n", current_storage_servers);
             // Send the Response 
             send_server_request(message_status, huge_database.individual_storage_server[index_of_storage_server].client_socket);
 

@@ -33,12 +33,6 @@ typedef struct fileNameAndOperation{
 }fileNameAndOperation;
 
 
-typedef struct source_dest{
-    char source_path[1024];
-    char destination_path[1024];
-}source_dest;
-
-
 
 typedef struct Packet
 {
