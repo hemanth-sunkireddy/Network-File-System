@@ -106,9 +106,9 @@ int main(){
           else{ //1,2,5,6,7
              //
              NS_reply reply;
-             char message[1024];
-             recv(client_socket, message, 1024, 0);
-             printf("MESSAGE FROM NAMING SERVER: %s\n", message);
+             //char message[1024];
+             recv(client_socket, &reply, sizeof(NS_reply), 0);
+             printf("MESSAGE FROM NAMING SERVER %d %d\n", reply.port,reply.SS_no);
               close(client_socket);
              printf("Disconnected from the Naming Server.\n");
              // Close the socket.
@@ -142,11 +142,13 @@ int main(){
             printf("Connected to the SS\n");
 
 
-             send(client_socket, &file_or_folder_details, sizeof(file_or_folder_details), 0);
+            send(client_socket, &file_or_folder_details, sizeof(file_or_folder_details), 0);
             printf("\nWait till the response from SS\n");
-
-            
-            client_receving_data(client_socket,file_or_folder_details); //does communicate with SS
+            char input[MAX_LENGTH];
+            strcpy(input, "DATA TO THE STORAGE SERVER.");
+            // send(client_socket, input, MAX_LENGTH, 0);
+            // printf("Data sent success to storage server.\n");
+            // client_receving_data(client_socket,file_or_folder_details  ); //does communicate with SS
 
            
             close(client_socket);

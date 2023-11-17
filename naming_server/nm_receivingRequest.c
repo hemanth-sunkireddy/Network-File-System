@@ -32,7 +32,7 @@ void saveFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]) {
 }
 
 void loadFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]) {
-    FILE *file = fopen("README.md", "r");
+    FILE *file = fopen("file_counts.txt", "r");
 
     if (file == NULL) {
         perror("Error opening file");
@@ -78,7 +78,7 @@ void FindNumberOfStorageServers(SS_Info ssx[MAX_STORAGE_SERVERS])
 {
     loadFileCounts(ssx);
     loadFolderCounts(ssx);
-    FILE *file = fopen("file_counts.txt", "r");
+    FILE *file = fopen("file_counts", "r");
     if (file == NULL) {
         perror("Error opening file");
         exit(1);
