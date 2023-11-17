@@ -32,7 +32,8 @@ void saveFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]) {
 }
 
 void loadFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]) {
-    FILE *file = fopen("file_counts.txt", "r");
+    FILE *file = fopen("README.md", "r");
+
     if (file == NULL) {
         perror("Error opening file");
         exit(1);
@@ -172,7 +173,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
     int operation_num = FilenameAndOperation.operation_number;
     char path[MAX_PATH_LENGTH];
     strcpy(path, FilenameAndOperation.name_of_file_or_folder);
-    FindNumberOfStorageServers(ssx);
+    //FindNumberOfStorageServers(ssx);
     printf("Num of storage servers: %d\n",number_of_storage_servers);
     // Load the file counts at the beginning of the program
     loadFileCounts(ssx);
@@ -446,6 +447,7 @@ void ReadorWriteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessag
 acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int ss_socket, acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name){
     int operation_no=operation_and_fileorfolder_name.operation_number;
     if(operation_no==3 || operation_no==4 || operation_no==8 || operation_no==9){
+        printf("OPERATION CREATE SUCCESS.\n");
         CreateandDeleteOperation(ssx,message_status,operation_and_fileorfolder_name);
     }
     else if(operation_no==1 || operation_no==2 || operation_no==5 || operation_no==6 || operation_no==7){
