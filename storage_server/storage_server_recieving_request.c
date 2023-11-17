@@ -77,7 +77,9 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
         }
         else if ( operation_number == 2){
             char data_from_client[MAX_LENGTH];
-            recv(client_socket, &data_from_client, MAX_LENGTH, 0);
+            int return_value_of_receive = recv(client_socket, data_from_client, MAX_LENGTH, 0);
+            printf("Return value of return: %d\n", return_value_of_receive);
+            printf("Data recieved from client. %s\n", data_from_client);
             message_status = writing_the_file(final_path_after_appending_storage_server_number, message_status, data_from_client);
         }
         // rest of the operations.
