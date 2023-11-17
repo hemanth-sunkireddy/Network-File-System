@@ -1,86 +1,5 @@
 #include "headers.h"
 
-
-// void CreateandDeleteOperation(int client_socket, struct acknowledgmentMessage message_status,fileNameAndOperation FilenameAndOperation)
-// {
-//     SS_Info ssx;
-//     char file_or_folder_name[MAX_LENGTH];
-//     strcpy(file_or_folder_name,FilenameAndOperation.name_of_file_or_folder);
-//     int operation_number=FilenameAndOperation.operation_number; 
-//     int nm_as_client_socket;
-//     struct sockaddr_in nm_as_client_address;
-//     socklen_t nm_as_client_address_size;
-//     client_socket = socket(AF_INET, SOCK_STREAM, 0);
-//     if (client_socket < 0){
-//         perror("Socket error");
-//         exit(1);
-//     }
-//     else{
-//         printf("TCP CLIENT SOCKET CREATED.\n");
-//     }
-//     memset(&nm_as_client_address, '\0', sizeof(nm_as_client_address));
-//     nm_as_client_address.sin_family = AF_INET;
-//     nm_as_client_address.sin_port = port;
-//     nm_as_client_address.sin_addr.s_addr = inet_addr(ip);
-//     connect(client_socket, (struct sockaddr*)&nm_as_client_address, sizeof(nm_as_client_address));
-//     printf("Connected to the server.\n\n");
-//     if(operation_number==4 || operation_number==9){
-//         if(strchr(path, '/')==NULL){                  //single file or directory
-//             // if(!ssx){        
-//             if(1){                        //condition for storge server being not full
-//                 // snprintf(ssx.paths_accessible[ssx.num_of_paths++].path,MAX_LENGTH,"%s/%s",path,file_or_folder_name);
-//                 // printf("Creation successful\n");
-//                 // strcpy(message_status.status_message,"Creation successful");
-//                 // send(nm_as_client_socket,&message_status,MAX_LENGTH,0);
-//             }
-//             else{
-//                 //create new storage server
-//                 // SS_Info ss_new;
-//                 // ss_new_no++;
-//                 // snprintf(ss_new.paths_accessible[ss_new.num_of_paths++].path,MAX_LENGTH,"%s/%s",path,file_or_folder_name);
-//                 // printf("Creation successful\n");
-//                 // strcpy(message_status.status_message,"Creation successful");
-//                 // send(nm_as_client_socket,&message_status,MAX_LENGTH,0);
-//             }
-//         }
-//         // else{
-//         //     //search implementation
-//         //     if(path){
-//         //         printf("Path found\n");
-
-//         //         char forward_slash_character[1];
-                
-//         //         snprintf(ssx.paths_accessible[ssx.num_of_paths++].path,MAX_LENGTH,"%s/%s",path,file_or_folder_name);
-//         //         printf("Creation successful\n");
-//         //         strcpy(message_status.status_message,"Creation successful");
-//         //         send(nm_as_client_socket,&message_status,MAX_LENGTH,0);
-//         //     }
-//         //     else{
-//         //         printf("Path not found\n");
-//         //         printf("Creation not successful since path not found\n");
-//         //         strcpy(message_status.status_message,"Creation successful since path not found");
-//         //         send(nm_as_client_socket,&message_status,MAX_LENGTH,0);
-//         //     }
-//         // }
-//     }
-//     else if(operation_number==3 || operation_number==8){
-//         //search through all the accessible paths
-//         if(path){
-//             int len=strlen(file_or_folder_name);
-//             snprintf(path,strlen(path)-len,"%s",path);
-//             ssx.num_of_paths--;
-//             printf("Path found and deletion successful");
-//             strcpy(message_status.status_message,"Deletion successful since path not found");
-//             send(nm_as_client_socket,&message_status,MAX_LENGTH,0);
-//         }
-//         else{
-//             printf("Path not found");
-//             strcpy(message_status.status_message,"Deletion successful since path not found");
-//             send(nm_as_client_socket,&message_status,MAX_LENGTH,0);
-//         }
-//     }
-// }
-
 void CreateNewStorageServer(SS_Info ssx[MAX_STORAGE_SERVERS])
 {
     SS_Info* ssx_new=(SS_Info*)malloc(sizeof(SS_Info));
@@ -274,32 +193,21 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                         else{
                             printf("TCP SS_CLIENT SOCKET CREATED for NS.\n");
                         }
-                        printf("hello\n");
                         memset(&ssx[i].ss_address, '\0', sizeof(ssx[i].ss_address));
                         ssx[i].ss_address.sin_family = AF_INET;
                         ssx[i].ss_address.sin_port = port;
                         ssx[i].ss_address.sin_addr.s_addr = inet_addr(ip);
-                        printf("hello\n");
                         printf("%d %d %d %d\n",ssx[i].SS_port,ssx[i].storage_server_number,ssx[i].num_of_files,ssx[i].num_of_folders);
                         // Connect to the server
                         connect(ssx[i].ss_socket, (struct sockaddr*)&ssx[i].ss_address, sizeof(ssx[i].ss_address));
-                        printf("hello\n");
                         printf("Connected to the storage server %d.\n\n",i);
-                        printf("hello\n");
                         printf("%d %d %d %d\n",ssx[i].SS_port,ssx[i].storage_server_number,ssx[i].num_of_files,ssx[i].num_of_folders);
                         send(ssx[i].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
-                        printf("hello\n");
                         printf("Sent File or folder name and Operation number successfully\n");
-                        //strcpy(ssx[i].paths_accessible[ssx[i].num_of_files].path,path);
-                        strcat("world.txt","hello");
-                        for(int j=0;j<ssx[i].num_of_files;j++){
-                            printf("%s\n",ssx[i].paths_accessible[j].path);
-                        } 
+                        strcpy(ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path,path); 
+                        printf("Current stored path: %s",ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path);
                     ssx[i].num_of_files++;
                     printf("%d\n",ssx[i].num_of_files);
-                    for(int j=0;j<ssx[i].num_of_files;j++){
-                        printf("%s\n",ssx[i].paths_accessible[j].path);
-                    }
                     saveFileCounts(ssx); // Save the updated file 
                     //savePathsAccessible(ssx); 
                     break;
@@ -326,7 +234,8 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                         printf("Connected to the storage server %d.\n\n",i);
                         send(ssx[i].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
                         printf("Sent File or folder name and Operation number successfully\n");
-                        strcpy(ssx[i].paths_accessible[ssx[i].num_of_folders].path,path);
+                        strcpy(ssx[i].paths_accessible[ssx[i].num_of_folders+ssx[i].num_of_files].path,path);
+                        printf("Current stored path: %s",ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path);
                     ssx[i].num_of_folders++;
                     saveFolderCounts(ssx); // Save the updated file counts
                     //savePathsAccessible(ssx); 
@@ -364,17 +273,16 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                         send(ssx[number_of_storage_servers-1].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
                         printf("Sent File or folder name and Operation number successfully\n");
                         if(operation_num==4){
-                        strcpy(ssx[i].paths_accessible[ssx[i].num_of_files].path,path);
-                        printf("%d\n",ssx[i].num_of_files);
+                            strcpy(ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path,path);
                             ssx[i].num_of_files++;
-                            printf("%d\n",ssx[i].num_of_files);
                             saveFileCounts(ssx);
                         }
                         else{
-                        strcpy(ssx[i].paths_accessible[ssx[i].num_of_folders].path,path);
-                            ssx[i].num_of_files++;
+                            strcpy(ssx[i].paths_accessible[ssx[i].num_of_folders+ssx[i].num_of_files].path,path);
+                            ssx[i].num_of_folders++;
                             saveFolderCounts(ssx);
                         }
+                        printf("Current stored path: %s",ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path);
                 //saveFileCounts(ssx); // Save the updated file counts
             }
         } 
@@ -481,7 +389,6 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
     }
     // Other operations handling
 }
-
 void ReadorWriteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int ss_socket)
 {
     printf("HELLO");
