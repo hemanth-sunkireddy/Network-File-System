@@ -8,6 +8,8 @@ int main(){
   SS_Info ssx[MAX_STORAGE_SERVERS];
   for (int i = 0; i < CURRENT_STORAGE_SERVERS; i++){
     ssx[i].SS_port = PORT + i;
+    strcpy(ssx[i].ip,ip);
+    ssx[i].storage_server_number=i;
     printf("Storage server %d number connected to port number %d\n", i, PORT + i);
   }
   int nm_server_socket, ss_socket;
@@ -60,7 +62,7 @@ int main(){
 
 
         fileNameAndOperation client_operation_number_path_name; 
-        recv(ss_socket, &client_operation_number_path_name, sizeof(fileNameAndOperation), 0);
+        recv(ss_socket, &client_operation_number_path_name, MAX_LENGTH, 0);
         
         printf("Operation number client asked:%d\n", client_operation_number_path_name.operation_number);
         printf("PATH CLIENT ASKED: %s\n", client_operation_number_path_name.name_of_file_or_folder);
