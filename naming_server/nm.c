@@ -221,7 +221,7 @@ int main(){
         // //send_server_request(message_status, ss_socket);
 
         
-        break;
+    
         // printf("Client disconnected.\n\n");
   }
   // // CLose the socket
