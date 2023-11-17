@@ -106,7 +106,9 @@ int main(){
           else{ //1,2,5,6,7
              //
              NS_reply reply;
-             recv(client_socket, &reply, sizeof(reply), 0);
+             char message[1024];
+             recv(client_socket, message, 1024, 0);
+             printf("MESSAGE FROM NAMING SERVER: %s\n", message);
               close(client_socket);
              printf("Disconnected from the Naming Server.\n");
              // Close the socket.

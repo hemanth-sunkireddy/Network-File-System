@@ -78,7 +78,7 @@ typedef struct fileNameAndOperation{
 
 typedef struct Data_of_SS_SentToClient{
     int SS_port;
-    char* SS_ip;
+    char SS_ip[MAX_LENGTH];
     int SS_no;
 }Data_of_SS_SentToClient;
 

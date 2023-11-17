@@ -178,8 +178,8 @@ int main(){
 
 
         fileNameAndOperation client_operation_number_path_name; 
-        recv(ss_socket, &client_operation_number_path_name, MAX_LENGTH, 0);
-        
+        int recieve_status = recv(ss_socket, &client_operation_number_path_name, MAX_LENGTH, 0);
+        printf("Status of the recieving:%d\n", recieve_status);
         printf("Operation number client asked:%d\n", client_operation_number_path_name.operation_number);
         printf("PATH CLIENT ASKED: %s\n", client_operation_number_path_name.name_of_file_or_folder);
         // If operation number == create or delete
@@ -220,10 +220,12 @@ int main(){
         // // Sending the response
         // //send_server_request(message_status, ss_socket);
 
-        // // CLose the socket
-        // close(ss_socket);
+        
+        break;
         // printf("Client disconnected.\n\n");
   }
+  // // CLose the socket
+        close(ss_socket);
 
 
   return 0;
