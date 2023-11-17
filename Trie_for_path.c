@@ -166,3 +166,21 @@ int main() {
 
 
 }
+Output :
+Full Path: /rootm/server2/folder2/folder3
+Path1 is valid: 1
+Path2 is valid: 0
+Path3 is valid: 1
+Path4 is valid: 0
+Full Path: /rootm/server1
+Full Path: /rootm/server2
+Full Path: /rootm/server3
+Full Path: /rootm/server4
+Full Path: /rootm/server1/folder1
+Full Path: /rootm/server2/folder2
+Full Path: /rootm/server1/file1.txt
+Full Path: /rootm/server1/folder1/file2.txt
+Full Path: /rootm/server2/folder2/folder3/file3.txt
+Full Path: /rootm/server2/folder2/folder3
+Full Path: /rootm/server2/folder2/folder3/fol4
+
