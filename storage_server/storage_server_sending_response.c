@@ -38,7 +38,18 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         printf("Response of creating a file sent successfully.\n");
     }
     else if ( message_status.operation_number == 5 ) { 
-        send(client_socket, message_status.status_message, MAX_LENGTH, 0 ); 
+        printf("File Owner: %d\n", message_status.file_information.file_owner);
+        fileInformation information_of_the_file; 
+
+        // Copying the file details in the new struct and passing the struct to avoid data loss.
+        information_of_the_file.file_group = message_status.file_information.file_group;
+        information_of_the_file.file_inode_number = message_status.file_information.file_inode_number;
+        information_of_the_file.file_owner = message_status.file_information.file_owner;
+        information_of_the_file.file_size = message_status.file_information.file_size;
+
+        send(client_socket, &message_status, MAX_LENGTH, 0 ); 
+        send(client_socket, &information_of_the_file, MAX_LENGTH, 0);
+        
         printf("Reponse of getting additional information sent successfully.\n");
     }
     else if ( message_status.operation_number == 6 ){

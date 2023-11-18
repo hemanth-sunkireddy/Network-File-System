@@ -47,15 +47,19 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
 
     }
     if ( file_or_folder_details.operation_number == 5){
-        //filr info
          acknowledgmentMessage message_status;
-        if(recv(client_socket,&message_status,sizeof(message_status),0)==-1){
+        if(recv(client_socket , &message_status , MAX_LENGTH ,0)==-1){
             printf("error in getting folder data\n");
         }
-        printf("File Group: %d\n",message_status.file_information.file_group);
-        printf("File inode number: %u\n",message_status.file_information.file_inode_number);
-        printf("File owner: %d\n",message_status.file_information.file_owner);
-        printf("File size: %ld\n",message_status.file_information.file_size);
+        printf("Status of the operation: %s\n", message_status.status_message);
+        fileInformation information_of_file;
+        if(recv(client_socket , &information_of_file , MAX_LENGTH ,0)==-1){
+            printf("error in getting folder data\n");
+        }
+        printf("File Group: %d\n",information_of_file.file_group);
+        printf("File inode number: %u\n",information_of_file.file_inode_number);
+        printf("File owner: %d\n",information_of_file.file_owner);
+        printf("File size: %ld\n",information_of_file.file_size);
 
 
     }
