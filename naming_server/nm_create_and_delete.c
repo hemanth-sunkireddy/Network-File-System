@@ -78,6 +78,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                         printf("Current stored path: %s",ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path);
                     ssx[i].num_of_folders++;
                     saveFolderCounts(ssx); // Save the updated file counts
+                    *storage_server_connection_socket = ssx[i].ss_socket;
                     //savePathsAccessible(ssx); 
                     break;
                 }
@@ -125,6 +126,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                             saveFolderCounts(ssx);
                         }
                         printf("Current stored path: %s",ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path);
+                        *storage_server_connection_socket = ssx[i].ss_socket;
                 //saveFileCounts(ssx); // Save the updated file counts
             }
         } 
@@ -154,6 +156,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                 printf("Connected to the storage server %d.\n\n", i);
                 send(ssx[i].ss_socket, &FilenameAndOperation, sizeof(fileNameAndOperation), 0);
                 printf("Sent File or folder name and Operation number successfully\n");
+                *storage_server_connection_socket = ssx[i].ss_socket;
                 break;
             }
         }
@@ -196,6 +199,7 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                             printf("%d\n",ssx[i].num_of_folders);
                             saveFolderCounts(ssx);
                         }
+                        *storage_server_connection_socket = ssx[i].ss_socket;
                     }
                 }
             //}

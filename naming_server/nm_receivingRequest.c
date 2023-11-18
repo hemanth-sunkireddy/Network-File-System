@@ -4,7 +4,7 @@
 acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int ss_socket, acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name, int* storage_server_connection_socket){
     int operation_no=operation_and_fileorfolder_name.operation_number;
     if(operation_no==3 || operation_no==4 || operation_no==8 || operation_no==9){
-        printf("OPERATION CREATE SUCCESS.\n");
+        printf("OPERATION CREATE OR DELETE RECEIVED FROM CLIENT SUCCESSFULLY.\n");
         CreateandDeleteOperation(ssx,message_status,operation_and_fileorfolder_name, storage_server_connection_socket);
         printf("OPERATION RETURN STATUS CHECK.\n");
     }
