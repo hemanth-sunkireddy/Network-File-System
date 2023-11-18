@@ -28,100 +28,27 @@
 ``` 
 
 ### Testing: 
-Testing the code for single client of all operations. 
-#### Read File Operation
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation no and path - True
-3. Naming server performing necessary operation - True
-4. Naming server correct sending storage server info to client - True
-5. Client connecting to the given storage server - True
-6. Client receiving the content of the File and status message - True
-
-#### Write File Operation
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation number and path - True
-3. Naming server performing necessary operation - True
-4. Naming server correct sending storage server info to client - True
-5. Client connecting to the given storage server - True
-6. Client sending data to write in file and storage server receiving data - True
-7. Client receiving the status message - True
-
-#### Delete File operation
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation number and path - True 
-3. Naming server performing necessary operation - True
-4. Naming server gets correct storage server to connect - True
-5. Naming server connecting to the given storage server - True 
-6. Storage server performing operation successful - True
-7. Naming server receiving the status message from storage server - True 
-8. Naming server sending back the status message to client - True
-
-#### Create File operation
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation number and path - True
-3. Naming server performing necessary operation - True 
-4. Naming server gets correct storage server to connect - True
-5. Naming server connecting to the given storage server - True
-6. Storage server performing operation successful - True
-7. Naming server receiving the status message from storage server - True 
-8. Naming server sending back the status message to client - True
-
-#### File Information operation
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation number and path - True
-3. Naming server performing necessary operation - True
-4. Naming server correct sending storage server info to client - True
-5. Client connecting to the given storage server - True
-6. Storage server sending file information success - True
-7. Client receiving the status message and file information - True
-
-#### Folder information operation 
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation number and path - True
-3. Naming server performing necessary operation - True
-4. Naming server correct sending storage server info to client - True
-5. Client connecting to the given storage server - True
-6. Storage server sending folder information success - True
-7. Client receiving the status message and folder information - True
-
-#### Listing all Files information 
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation number and path - True
-3. Naming server performing necessary operation - True
-4. Naming server correct sending storage server info to client - True
-5. Client connecting to the given storage server - True 
-6. Storage server sending list of all files and folders success - True
-7. Client receiving the status message and files and folders list - True
-
-#### Delete Folder Operation 
-1. Client sending operation number and path - True
-2. Naming server receiving correct operation number and path - True
-3. Naming server performing necessary operation - True 
-4. Naming server gets correct storage server to connect - True
-5. Naming server connecting to the given storage server - True 
-6. Storage server performing operation successful - True
-7. Naming server receiving the status message from storage server - True 
-8. Naming server sending back the status message to client - True
-
-#### Create Folder operation 
-1. Client sending operation number and path - True 
-2. Naming server receiving correct operation number and path - True 
-3. Naming server performing necessary operation - True 
-4. Naming server gets correct storage server to connect - True
-5. Naming server connecting to the given storage server - True 
-6. Storage server performing operation successful - True
-7. Naming server receiving the status message from storage server - True 
-8. Naming server sending back the status message to client - True
+#### Copy File Operation
+1. Client will give source file path and destination file path - False
+2. Naming server will check for the storage server source path and storage server destination path - False
+3. Naming server Connects to the source storage server and sends all the necessary details of the destination storage server - False 
+4. Source storage server recieves the details of the destination storage server - False 
+5. Source storage server connects to the destination path storage server - False
+6. Source storage server sends the file name and file content to the destination path storage server - False 
+7. Destination storage server recieves the file name and file content and adds it to the respective path - False 
+8. Destination storage server sends the acknowledgment status to the source storage server. - False 
+9. Then source storage server sends this status back to the client - False
 
 #### Copy Folder operation 
-// Need to implement.
-
-#### Copy File operation 
-// Need to implement. 
-
-#### Creating New storage server (Dynamically)
-// Need to implement. 
-
+1. Client will give source folder path and destination folder path - False
+2. Naming server will check for the storage server source path and storage server destination path - False
+3. Naming server Connects to the source storage server and sends all the necessary details of the destination storage server - False 
+4. Source storage server recieves the details of the destination storage server - False 
+5. Source storage server connects to the destination path storage server - False
+6. Source storage server sends the folder name and folder content to the destination path storage server - False 
+7. Destination storage server recieves the file name and file content and adds it to the respective path - False 
+8. Destination storage server sends the acknowledgment status to the source storage server. - False 
+9. Then source storage server sends this status back to the client - False
 
 ### Testing multiple clients to the naming server. 
 // Need to implement. 
