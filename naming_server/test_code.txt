@@ -1,0 +1,64 @@
+
+// Function to load paths_accessible from a file
+// void loadPathsAccessible(SS_Info ssx[MAX_STORAGE_SERVERS]) {
+//     for(int i=0;i<number_of_storage_servers;i++){
+//         FILE *file;
+//         if(i==0){
+//     file = fopen("paths_accessible1.txt", "r");
+//     if (file == NULL) {
+//         perror("Error opening file");
+//         exit(1);
+//     }
+// printf("Entered3\n");
+//     char line[MAX_PATH_LENGTH];
+//     int server_count = 0;
+//     int path_count = 0;
+//     printf("Enter\n");
+//     while (fgets(line, sizeof(line), file)) {
+//         // if (line[0] == 'S' && line[7] == 'S') { // Identify the line with storage server information
+//         //     sscanf(line, "Storage Server %d:", &server_count);
+//         //     path_count = 0;
+//         // } else {
+//             strcpy(ssx[server_count].paths_accessible[path_count].path, line);
+//             path_count++;
+//         //}
+//     }
+//         }
+//     fclose(file);
+//     printf("Enter1\n");
+//     }
+// }
+
+// void savePathsAccessible(SS_Info ssx[MAX_STORAGE_SERVERS]) {
+//     for(int i=0;i<number_of_storage_servers;i++){
+//         printf("Entered\n");
+//         FILE *file;
+//         if(i==0){
+//             printf("Entered2\n");
+//             loadFolderCounts(ssx);
+//             loadPathsAccessible(ssx);
+//             file = fopen("paths_accessible1.txt", "a");
+//             printf("Entered4\n");
+//             if (file == NULL) {
+//                 perror("Error opening file");
+//                 exit(1);
+//             }
+//             printf("Entered5\n");
+//             for (int j = 0; j < ssx[i].num_of_folders; j++) {
+//                 fprintf(file, "%s\n", ssx[i].paths_accessible[j].path);
+//             }
+//             printf("Entered6\n");
+//         }
+//     // loadFolderCounts(ssx);
+//     // loadPathsAccessible(ssx);
+//     // for (int i = 0; i < number_of_storage_servers; i++) {
+//     //     fprintf(file, "Storage Server %d:\n", i);
+//     //     for (int j = 0; j < ssx[i].num_of_folders; j++) {
+//     //         fprintf(file, "%s\n", ssx[i].paths_accessible[j].path);
+//     //     }
+//     //     fprintf(file, "\n");
+//     // }
+
+//     fclose(file);
+//     }
+// }
