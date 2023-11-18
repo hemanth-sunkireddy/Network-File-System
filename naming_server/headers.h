@@ -107,13 +107,13 @@ typedef struct Data_Sent_To_SS{
     fileNameAndOperation filenameandoperation;
 }Data_Sent_To_SS;
 
-acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int client_socket, struct acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name);
-void response_recieve_or_send(SS_Info ssx[MAX_STORAGE_SERVERS], int client_socket,struct acknowledgmentMessage message_status, int operation_number);
+acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int client_socket, struct acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name, int* storage_server_connection_socket);
+void response_recieve_or_send(SS_Info ssx[MAX_STORAGE_SERVERS], int client_socket,struct acknowledgmentMessage message_status, int operation_number, int storage_server_connection_socket);
 void saveFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void loadFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void saveFolderCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void loadFolderCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
-void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation);
+void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int* storage_server_connection_socket);
 void CreateNewStorageServer(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void ReadorWriteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int ss_socket);
 

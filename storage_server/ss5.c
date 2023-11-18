@@ -36,7 +36,10 @@ int main() {
             message_status =  receive_client_request(huge_database.individual_storage_server[index_of_storage_server].client_socket, message_status, index_of_storage_server, pointer_to_current_storage_servers);
             printf("OPERATION STATUS: %s\n", message_status.status_message);
             printf("Current storage servers after addding one new storage server.%d\n", current_storage_servers);
-            // Send the Response 
+
+
+            // Send the responses to naming server or client depending on the operation. 
+            int client_socket = huge_database.individual_storage_server[index_of_storage_server].client_socket;
             send_server_request(message_status, huge_database.individual_storage_server[index_of_storage_server].client_socket);
 
             // CLose the socket

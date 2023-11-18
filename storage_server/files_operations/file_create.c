@@ -13,5 +13,6 @@ acknowledgmentMessage creating_the_file(char file_name[2*MAX_LENGTH], acknowledg
     fclose(file);
     strcpy(message_status.status_message, "FILE CREATED SUCCESSFULLY");        
     printf("File created successfully: %s\n", file_name);
+    
     return message_status;
 }

@@ -12,6 +12,7 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     fileNameAndOperation file_or_folder_details;
 
     recv(client_socket, &file_or_folder_details, MAX_LENGTH, 0);
+    
     printf("client/namingServer Asked for this file / folder: %s\n", file_or_folder_details.name_of_file_or_folder);
 
     int operation_number = file_or_folder_details.operation_number; 

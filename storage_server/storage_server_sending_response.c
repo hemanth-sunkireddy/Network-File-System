@@ -2,7 +2,6 @@
 
 void send_server_request(acknowledgmentMessage message_status, int client_socket)
 {
-    
     if ( message_status.operation_number == 1){
         char length_of_string[MAX_LENGTH];
         printf("%d\n", message_status.file_or_folder_content[0].total_chunks);
@@ -28,7 +27,9 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         printf("Response of deleting a file sent successfully.\n");
     }
     else if ( message_status.operation_number == 4 ) { 
-        send(client_socket, message_status.status_message, MAX_LENGTH, 0);
+        printf("Message to send: %s\n", message_status.status_message);
+        int sending_status = send(client_socket, message_status.status_message, MAX_LENGTH, 0);
+        printf("Sending status of creation: %d\n", sending_status);
         printf("Response of creating a file sent successfully.\n");
     }
     else if ( message_status.operation_number == 5 ) { 
@@ -52,6 +53,5 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         send(client_socket, message_status.status_message, MAX_LENGTH, 0);
         printf("Response of creating a Folder sent successfully.\n");
     }
-    
 
 }

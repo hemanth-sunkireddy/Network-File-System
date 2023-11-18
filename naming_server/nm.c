@@ -64,13 +64,25 @@ int main(){
         printf("Status of the recieving:%d\n", recieve_status);
         printf("Operation number client asked:%d\n", client_operation_number_path_name.operation_number);
         printf("PATH CLIENT ASKED: %s\n", client_operation_number_path_name.name_of_file_or_folder);
+        char message_from_storage_server[MAX_LENGTH];
+        send(ss_socket, message_from_storage_server, MAX_LENGTH, 0);
+        printf("MESSAGE FROM STORAGE SERVER: %s\n", message_from_storage_server);
+
 
         // Recieve the request from the client. 
-        message_status = obtain_ss_info(ssx,ss_socket, message_status,client_operation_number_path_name);
+        int storage_server_connection_socket; 
+
+        message_status = obtain_ss_info(ssx,ss_socket, message_status,client_operation_number_path_name, &storage_server_connection_socket);
+        
+        // char message_from_ss[MAX_LENGTH];
+        // recv(storage_server_connection_socket, message_from_ss, MAX_LENGTH, 0);
+        // printf("MESSAGE FROM STORAGE SERVER: %s\n", message_from_ss);
+        // Here I need to change everything, the main problem is here. Finally found. 
 
         // Recieve the response from the storage server. 
-        response_recieve_or_send(ssx, ss_socket, message_status, client_operation_number_path_name.operation_number);
+        response_recieve_or_send(ssx, ss_socket, message_status, client_operation_number_path_name.operation_number, storage_server_connection_socket);
         
+
         // Sending the response 
         //send_server_request(message_status, ss_socket);
   }

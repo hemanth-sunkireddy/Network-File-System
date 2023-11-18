@@ -1,6 +1,6 @@
 #include "headers.h"
 
-void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation) {
+void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int* storage_server_connection_socket) {
     int operation_num = FilenameAndOperation.operation_number;
     char path[MAX_PATH_LENGTH];
     strcpy(path, FilenameAndOperation.name_of_file_or_folder);
@@ -36,6 +36,14 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                         printf("%d %d %d %d\n",ssx[i].SS_port,ssx[i].storage_server_number,ssx[i].num_of_files,ssx[i].num_of_folders);
                         send(ssx[i].ss_socket,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
                         printf("Sent File or folder name and Operation number successfully\n");
+
+                        // Adding the naming server acted as client to the storage server socket to the storage_server_connected_socket.
+                        *storage_server_connection_socket = ssx[i].ss_socket;
+                        // Just checking status message from storage server. 
+                        // char message_from_ss[MAX_LENGTH];
+                        // recv(ssx[i].ss_socket, message_from_ss, MAX_LENGTH, 0);
+                        // printf("MESSAGE FROM STORAGE SERVER: %s\n", message_from_ss);
+
                         strcpy(ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path,path); 
                         printf("Current stored path: %s",ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path);
                     ssx[i].num_of_files++;
