@@ -77,20 +77,19 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
             return message_status;
         }
         else if ( operation_number == 2){
+
+            // Recieving the data from client to add into the file. 
             char data_from_client[MAX_LENGTH];
+            printf("Wait till the client sends the data to write in the file.\n");
             int return_value_of_receive = recv(client_socket, data_from_client, MAX_LENGTH, 0);
             printf("Return value of return: %d\n", return_value_of_receive);
-            printf("Data recieved from client. %s\n", data_from_client);
+            printf("Data recieved from client: %s\n", data_from_client);
             message_status = writing_the_file(final_path_after_appending_storage_server_number, message_status, data_from_client);
+            return message_status;
         }
         // rest of the operations.
         strcpy(message_status.status_message, "Just sending acknowledgment successful to client connections..\n");
         return message_status;
     }
-    
-    
-
-   
-
     
 }

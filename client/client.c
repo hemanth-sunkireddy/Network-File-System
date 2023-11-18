@@ -138,7 +138,7 @@ int main(){
             send(client_socket, &file_or_folder_details, MAX_LENGTH, 0);
             printf("\nWait till the response from SS\n");
 
-            printf("Data sent success to storage server.\n");
+            printf("Data sent success to storage server except write file details.\n");
 
             client_receving_data(client_socket,file_or_folder_details); 
 

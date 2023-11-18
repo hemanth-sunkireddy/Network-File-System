@@ -38,13 +38,13 @@ Testing the code for single client of all operations.
 6. Client receiving the content of the File and status message - True
 
 #### Write File Operation
-1. Client sending operation number and path - False 
-2. Naming server receiving correct operation number and path - False 
-3. Naming server performing necessary operation - False 
-4. Naming server correct sending storage server info to client - False 
-5. Client connecting to the given storage server - False 
-6. Client sending data to write in file and storage server receiving data - False
-7. Client receiving the status message - False 
+1. Client sending operation number and path - True
+2. Naming server receiving correct operation number and path - True
+3. Naming server performing necessary operation - True
+4. Naming server correct sending storage server info to client - True
+5. Client connecting to the given storage server - True
+6. Client sending data to write in file and storage server receiving data - True
+7. Client receiving the status message - True
 
 #### Delete File operation
 1. Client sending operation number and path - True

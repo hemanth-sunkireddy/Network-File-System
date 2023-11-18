@@ -2,7 +2,7 @@
 
 void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details){
 
-    // acknowledgmentMessage ack_fromSS;
+    // Acknowledgment from the storage server. 
     if ( file_or_folder_details.operation_number == 1){
         acknowledgmentMessage message_status;  
         char data_of_file[MAX_LENGTH];         
@@ -30,18 +30,26 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
     }
     if ( file_or_folder_details.operation_number == 2){
         //writing
-        char *input = NULL;
-        size_t n = 50;
-        //instead of fgets(fixed memory) ,use getline
+        char data_need_to_send_to_ss[MAX_LENGTH];
+        printf("Enter the data to write in the file: ");
 
-        if(getline(&input, &n, stdin)==-1){//;reallocates if more memory required
-            printf("Error in getline\n");
-        }
-        if(send(client_socket, input, n+1, 0)!=-1){
+        // Only string that contains without spaces now sending later will implement with spaces also. 
+        scanf("%s", data_need_to_send_to_ss);
+        printf("Data need to write in file: %s\n", data_need_to_send_to_ss);
+
+        if(send(client_socket, data_need_to_send_to_ss, MAX_LENGTH, 0) != -1){
             printf("Data send successfully\n");
         }
         else{
-            printf("Error in send \n");
+            printf("Error in send the data to the storage server.\n");
+        }
+        
+        char status_recieved_from_storage_server[MAX_LENGTH];
+        if ( recv(client_socket, status_recieved_from_storage_server, MAX_LENGTH, 0) != -1 ){
+            printf("status of operation: %s\n", status_recieved_from_storage_server);
+        }
+        else{
+            printf("Error in recieving status message from storage server.\n");
         }
                 
 
