@@ -1,29 +1,30 @@
 #include "headers.h"
 
 void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details){
+
     // acknowledgmentMessage ack_fromSS;
     if ( file_or_folder_details.operation_number == 1){
-        acknowledgmentMessage message_status;
-        char buffer[MAX_LENGTH];                
-        int bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
+        acknowledgmentMessage message_status;  
+        char data_of_file[MAX_LENGTH];         
+        int bytes_received = recv(client_socket, &message_status, MAX_LENGTH, 0);
+        int bytes_second_received = recv(client_socket, data_of_file, MAX_LENGTH, 0);
 
-        // Null-terminate the received data.
-        buffer[bytes_received] = '\0';
+        
+        printf("Status of the operation: %s\n", message_status.status_message);
+        printf("Data of the file: %s\n", data_of_file);
 
-        printf("Received: %s\n", buffer);
+        // int length;
+        // sscanf(buffer, "%d", &length);
 
-        int length;
-        sscanf(buffer, "%d", &length);
+        // printf("Length: %d\n", length);
 
-        printf("Length: %d\n", length);
+        // for (int i = 0; i < length; i++){
+        //     bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
 
-        for (int i = 0; i < length; i++){
-            bytes_received = recv(client_socket, buffer, MAX_LENGTH, 0);
+        //     buffer[bytes_received] = '\0';
 
-            buffer[bytes_received] = '\0';
-
-            printf("%s", buffer);
-        }
+        //     printf("%s", buffer);
+        // }
 
         printf("\nRead response successfully.\n");
     }

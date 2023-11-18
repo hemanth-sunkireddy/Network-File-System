@@ -99,15 +99,15 @@ int main(){
             printf("Disconnected from the Naming Server.\n");
           }
           else{ //1,2,5,6,7
-             //
+             
              NS_reply reply;
-             //char message[1024];
-             recv(client_socket, &reply, sizeof(NS_reply), 0);
+             recv(client_socket, &reply, MAX_LENGTH, 0);
              printf("MESSAGE FROM NAMING SERVER %d %d\n", reply.port,reply.SS_no);
               close(client_socket);
              printf("Disconnected from the Naming Server.\n");
-             // Close the socket.
-            //************
+             
+
+
              //create socket for Storage Server
              strcpy(ip, reply.IP);
              port = reply.port;
@@ -115,9 +115,7 @@ int main(){
             int client_socket;
             struct sockaddr_in client_address;
             socklen_t client_address_size;
-            //
 
-             // Creating socket for connecting to Naming server.
             client_socket = socket(AF_INET, SOCK_STREAM, 0);
             if (client_socket < 0){
                 perror("Socket error");
@@ -137,22 +135,16 @@ int main(){
             printf("Connected to the SS\n");
 
 
-            send(client_socket, &file_or_folder_details, sizeof(file_or_folder_details), 0);
+            send(client_socket, &file_or_folder_details, MAX_LENGTH, 0);
             printf("\nWait till the response from SS\n");
-            char input[MAX_LENGTH];
-            strcpy(input, "DATA TO THE STORAGE SERVER.");
-            // send(client_socket, input, MAX_LENGTH, 0);
-            // printf("Data sent success to storage server.\n");
-            // client_receving_data(client_socket,file_or_folder_details  ); //does communicate with SS
+
+            printf("Data sent success to storage server.\n");
+
+            client_receving_data(client_socket,file_or_folder_details); 
 
            
             close(client_socket);
             printf("Disconnected from the Storage Server.\n");
-
-            
-
-
- 
 
           }        
           

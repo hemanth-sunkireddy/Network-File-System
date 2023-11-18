@@ -47,7 +47,7 @@ int main(){
 
         // Listen server
         listen(nm_server_socket, 5);
-        printf("Listening...\n");
+        printf("\n\nListening...\n");
 
         printf("Wait till the client connects:\n");
 
@@ -68,16 +68,12 @@ int main(){
 
         // Recieve the request from the client. 
         int storage_server_connection_socket; 
+        Data_of_SS_SentToClient data_of_ss_to_client;
 
-        message_status = obtain_ss_info(ssx,ss_socket, message_status,client_operation_number_path_name, &storage_server_connection_socket);
-        
-        // char message_from_ss[MAX_LENGTH];
-        // recv(storage_server_connection_socket, message_from_ss, MAX_LENGTH, 0);
-        // printf("MESSAGE FROM STORAGE SERVER: %s\n", message_from_ss);
-        // Here I need to change everything, the main problem is here. Finally found. 
+        message_status = obtain_ss_info(ssx,ss_socket, message_status,client_operation_number_path_name, &storage_server_connection_socket, &data_of_ss_to_client);
 
         // Recieve the response from the storage server. 
-        response_recieve_or_send(ssx, ss_socket, message_status, client_operation_number_path_name.operation_number, storage_server_connection_socket);
+        response_recieve_or_send(ssx, ss_socket, message_status, client_operation_number_path_name.operation_number, storage_server_connection_socket, &data_of_ss_to_client);
         
 
         // Sending the response 

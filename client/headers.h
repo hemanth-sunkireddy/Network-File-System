@@ -18,11 +18,11 @@
 #define MAX_LENGTH 1024
 #define MAX_LENGTH_OF_PATH 10
 
-// char message[MAX_LENGTH];
+
 
 typedef struct NS{
     int port;
-    char IP[20];
+    char IP[MAX_LENGTH];
     int SS_no;
 }NS_reply;
 

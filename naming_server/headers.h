@@ -21,7 +21,7 @@
 #define NAMING_SERVER_MAIN_PORT 4000
 #define MAX_LENGTH 1024 
 #define MAX_STORAGE_SERVERS 10
-#define MAX_PATH_LENGTH 10
+#define MAX_PATH_LENGTH 50
 #define MAX_FOLDER_OR_FILE_LIMIT 10
 #define MAX_FILE_LIMIT 5
 #define MAX_FOLDER_LIMIT 5
@@ -107,15 +107,15 @@ typedef struct Data_Sent_To_SS{
     fileNameAndOperation filenameandoperation;
 }Data_Sent_To_SS;
 
-acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int client_socket, struct acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name, int* storage_server_connection_socket);
-void response_recieve_or_send(SS_Info ssx[MAX_STORAGE_SERVERS], int client_socket,struct acknowledgmentMessage message_status, int operation_number, int storage_server_connection_socket);
+acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int client_socket, struct acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name, int* storage_server_connection_socket, Data_of_SS_SentToClient* data_of_ss_to_client);
+void response_recieve_or_send(SS_Info ssx[MAX_STORAGE_SERVERS], int client_socket,struct acknowledgmentMessage message_status, int operation_number, int storage_server_connection_socket, Data_of_SS_SentToClient* data_of_ss_to_client);
 void saveFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void loadFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void saveFolderCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void loadFolderCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int* storage_server_connection_socket);
 void CreateNewStorageServer(SS_Info ssx[MAX_STORAGE_SERVERS]);
-void ReadorWriteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int ss_socket);
+void ReadorWriteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int ss_socket, Data_of_SS_SentToClient* data_of_ss_to_client);
 
 extern char *ip ;
 extern int port;

@@ -8,14 +8,19 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         sprintf(length_of_string, "%d", message_status.file_or_folder_content[0].total_chunks);
         
         // Send the length of the data as a separate message.
-        send(client_socket, length_of_string, MAX_LENGTH, 0);
-        printf("Length of the packet sent successfully\n");
+        // send(client_socket, length_of_string, MAX_LENGTH, 0);
+        // printf("Length of the packet sent successfully\n");
         
-        for (int i = 0; i < message_status.file_or_folder_content[0].total_chunks; i++) {
-            
-            send(client_socket, message_status.file_or_folder_content[i].data, MAX_LENGTH, 0);
-        }
+        // for (int i = 0; i < message_status.file_or_folder_content[0].total_chunks; i++) 
+        // {
+        //     printf("%d chunk data: %s\n", message_status.file_or_folder_content[i].data);
+        //     send(client_socket, message_status.file_or_folder_content[i].data, MAX_LENGTH, 0);
+        // }
         
+
+        printf("File data: %s\n", message_status.file_or_folder_content[0].data);
+        send(client_socket, &message_status, MAX_LENGTH, 0);
+        send(client_socket, message_status.file_or_folder_content[0].data, MAX_LENGTH, 0);
         printf("Response for reading a file sent successfully\n");
     }
     else if ( message_status.operation_number == 2){
