@@ -64,9 +64,6 @@ int main(){
         printf("Status of the recieving:%d\n", recieve_status);
         printf("Operation number client asked:%d\n", client_operation_number_path_name.operation_number);
         printf("PATH CLIENT ASKED: %s\n", client_operation_number_path_name.name_of_file_or_folder);
-        char message_from_storage_server[MAX_LENGTH];
-        send(ss_socket, message_from_storage_server, MAX_LENGTH, 0);
-        printf("MESSAGE FROM STORAGE SERVER: %s\n", message_from_storage_server);
 
 
         // Recieve the request from the client. 

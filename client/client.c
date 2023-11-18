@@ -74,15 +74,10 @@ int main(){
            fileNameAndOperation file_or_folder_details;
            Info(&file_or_folder_details);
            send(client_socket, &file_or_folder_details, sizeof(file_or_folder_details), 0); ////
-
      
           
           // Recieve the response from server
           printf("\nWait till the response from server:\n");
-          //   typedef struct source_dest{
-          //     char source_path[1024];
-          //     char destination_path[1024];
-          // }source_dest;
 
           if(file_or_folder_details.operation_number==3 ||file_or_folder_details.operation_number==4 ||file_or_folder_details.operation_number==8 ||file_or_folder_details.operation_number==9 ||file_or_folder_details.operation_number==10 ||file_or_folder_details.operation_number==11 ){
             
