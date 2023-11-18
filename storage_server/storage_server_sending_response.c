@@ -68,8 +68,23 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         printf("Response of folder information sent successfully.\n");
     }
     else if ( message_status.operation_number == 7 ) { 
+        // Sending Just status Message.
         send(client_socket, message_status.status_message, MAX_LENGTH, 0);
-        printf("Resonse of listing all files and folders sent successfully.\n");
+
+        // Now sending list of all folders and files in a given Folder. 
+        char total_count_in_char[MAX_LENGTH]; 
+        int total_number_of_files_and_folders = message_status.list_of_folder.total_number_of_files_or_folders;
+        sprintf(total_count_in_char, "%d", total_number_of_files_and_folders);
+
+        printf("Total count of all files and folders: %s\n", total_count_in_char);
+        send(client_socket, total_count_in_char, MAX_LENGTH, 0);
+
+        for (int i = 0; i < total_number_of_files_and_folders; i++ ) { 
+            printf("File / Folder: %s\n", message_status.list_of_folder.names_of_file_or_folder[i].file_or_folder_name);
+            send(client_socket, message_status.list_of_folder.names_of_file_or_folder[i].file_or_folder_name, MAX_LENGTH, 0);
+        }
+
+        printf("Response of listing all files and folders sent successfully.\n");
     }
     else if( message_status.operation_number == 8 ){
         send(client_socket, message_status.status_message, MAX_LENGTH, 0);

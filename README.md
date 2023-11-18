@@ -85,13 +85,13 @@ Testing the code for single client of all operations.
 7. Client receiving the status message and folder information - True
 
 #### Listing all Files information 
-1. Client sending operation number and path - False 
-2. Naming server receiving correct operation number and path - False 
-3. Naming server performing necessary operation - False 
-4. Naming server correct sending storage server info to client - False 
-5. Client connecting to the given storage server - False 
-6. Storage server sending list of all files and folders success - False
-7. Client receiving the status message and files and folders list - False
+1. Client sending operation number and path - True
+2. Naming server receiving correct operation number and path - True
+3. Naming server performing necessary operation - True
+4. Naming server correct sending storage server info to client - True
+5. Client connecting to the given storage server - True 
+6. Storage server sending list of all files and folders success - True
+7. Client receiving the status message and files and folders list - True
 
 #### Delete Folder Operation 
 1. Client sending operation number and path - True

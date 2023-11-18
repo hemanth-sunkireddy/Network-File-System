@@ -98,22 +98,32 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
         printf("Folder information details fetched successfully and closed.\n");
     }
     if ( file_or_folder_details.operation_number == 7){
-        //listing file or folder
-        acknowledgmentMessage message_status;
-        if(recv(client_socket,&message_status,sizeof(message_status),0)==-1){
+        
+        // Listing files and folders in given folder. 
+        char message_status[MAX_LENGTH];
+        if(recv(client_socket , message_status , MAX_LENGTH,0) == -1){
             printf("error in getting folder data\n");
         }
-
-        printf("Total Contents %d\n",message_status.list_of_folder.total_number_of_files_or_folders);
-        for(int i=0;i<message_status.list_of_folder.total_number_of_files_or_folders;i++){
-            printf("%d)  %s\n",i+1,message_status.list_of_folder.names_of_file_or_folder[i].file_or_folder_name);
+        else{
+            printf("Operation status: %s\n", message_status);
         }
 
+        char total_number_of_files[MAX_LENGTH];
+        recv(client_socket, total_number_of_files, MAX_LENGTH, 0);
+        printf("Total files: %s\n", total_number_of_files);
+        int total_Number;
+        sscanf(total_number_of_files, "%d", &total_Number);
+
+        printf("Total Number in int: %d\n", total_Number);
+        
+        printf("Folder Information Details.\n");
+        for(int i = 0; i < total_Number; i++ ){ 
+            char name_of_file_or_folder[MAX_LENGTH];
+            recv(client_socket, name_of_file_or_folder, MAX_LENGTH, 0);
+            printf("Folder / File Name: %s\n", name_of_file_or_folder);
+       }
+
+       printf("Done listing all files and folders.\n");
+
     }
-
-
-
-
-
-
 }
