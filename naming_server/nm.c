@@ -6,7 +6,7 @@ char message[1024];
 int main(){
 
   SS_Info ssx[MAX_STORAGE_SERVERS];
-  for (int i = 0; i < CURRENT_STORAGE_SERVERS; i++){
+  for (int i = 0; i < MAX_STORAGE_SERVERS; i++){
     ssx[i].SS_port = PORT + i;
     strcpy(ssx[i].ip,ip);
     ssx[i].storage_server_number=i;
