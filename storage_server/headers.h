@@ -110,6 +110,8 @@ acknowledgmentMessage writing_the_file(char file_name[2*MAX_LENGTH], acknowledgm
 
 acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server, int* current_storage_servers);
 void send_server_request(acknowledgmentMessage message_status, int client_socket);
-
+void create_socket(list_of_all_storage_servers *database, int index_of_storage_server);
+void bind_socket(list_of_all_storage_servers *database, int index_of_storage_server);
+void start_listening(list_of_all_storage_servers *database, int index_of_storage_server);
 
 #endif
