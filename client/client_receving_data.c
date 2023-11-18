@@ -72,24 +72,30 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
 
     }
     if ( file_or_folder_details.operation_number == 6){
-        //folder inf 
-        acknowledgmentMessage message_status;
-        if(recv(client_socket,&message_status,sizeof(message_status),0)==-1){
-            printf("error in getting folder data\n");
-        }
         
-        printf("Folder name: %s\n ",message_status.folder_information.folder_name);
-        printf("Size: %d\n ",message_status.folder_information.size);
-        printf("Permissions: %s\n ",message_status.folder_information.Permissions);
-        printf("Last Modified Time: %s\n ",message_status.folder_information.last_modified_time);
-        printf("created Time: %s\n ",message_status.folder_information.created_time);
-        printf("Parent Folder: %s\n ",message_status.folder_information.parent_folder);
-        printf("Total Size in KB: %f\n ",message_status.folder_information.total_size_of_folder_in_KB);
-        printf("Total Files: %d\n ",message_status.folder_information.total_files);
-        printf("Total Folders: %d\n ",message_status.folder_information.total_folders);
+        char message_from_storage_server[MAX_LENGTH];
+        if(recv(client_socket, message_from_storage_server , MAX_LENGTH ,0) == -1){
+            printf("error in getting folder Information status message.\n");
+        }
+        else{
+            printf("Status of the operation: %s\n", message_from_storage_server);
+        }
 
 
+        // Folder information 
+        folderInformation information_of_folder; 
+        if ( recv(client_socket, &information_of_folder, MAX_LENGTH * MAX_LENGTH, 0) == -1){
+            printf("Error in getting folder information.\n");
+        }
+        else{
+            // For now only recieving three details. Later implement more. 
+            printf("Folder size: %d\n", information_of_folder.size);
+            printf("Folder total number of sub files: %d\n", information_of_folder.total_files);
+            printf("Folder total subFolders: %d\n", information_of_folder.total_folders);
+        }
 
+
+        printf("Folder information details fetched successfully and closed.\n");
     }
     if ( file_or_folder_details.operation_number == 7){
         //listing file or folder

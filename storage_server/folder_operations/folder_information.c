@@ -1,9 +1,5 @@
 #include "../headers.h"
 
-
-
-
-
 // Function to calculate the total size of a folder
 long long calculateTotalSize(const char *folderPath) {
     struct stat st;
@@ -72,7 +68,7 @@ acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENG
 
     folderInformation folder_details;
     strcpy(folder_details.folder_name, folder_name);
-    printf("%s\n", folder_details.folder_name);
+    printf("Folder Name: %s\n", folder_details.folder_name);
 
 
 
@@ -84,6 +80,7 @@ acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENG
 
         printf("Folder Information for %s:\n", folderPath);
         printf("Size: %lld bytes\n", (long long)st.st_size);
+        folder_details.size = (long long)st.st_size;
 
         // Permissions
         printf("Permissions: ");
@@ -141,7 +138,15 @@ acknowledgmentMessage additional_information_of_folder(char folder_name[MAX_LENG
     printf("Total Files: %d\n", numFiles);
     printf("Total Subfolders: %d\n", numSubfolders);
 
-    // return 0;
+    // Copy all the details of the folder to the status struct. 
+    // message_status.folder_information.size = (long long)st.st_size;
+    // message_status.folder_information.total_files = numFiles;
+    // message_status.folder_information.total_folders = numSubfolders;
+
+    folder_details.total_files = numFiles;
+    folder_details.total_folders = numSubfolders;
+
+    
 
     strcpy(message_status.status_message, message);
     memcpy(&message_status.folder_information, &folder_details, MAX_LENGTH * MAX_LENGTH);

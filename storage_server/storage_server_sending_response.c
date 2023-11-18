@@ -53,8 +53,18 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         printf("Reponse of getting additional information sent successfully.\n");
     }
     else if ( message_status.operation_number == 6 ){
-        send(client_socket, message_status.status_message, MAX_LENGTH, 0);    
-        send(client_socket, &message_status.folder_information, MAX_LENGTH * MAX_LENGTH, 0);
+        
+        // Sending Just status Message.
+        send(client_socket, message_status.status_message, MAX_LENGTH, 0);  
+
+        // Now sending folder information details. 
+        folderInformation information_of_folder; 
+        information_of_folder.size = message_status.folder_information.size;
+        information_of_folder.total_files = message_status.folder_information.total_files;
+        information_of_folder.total_folders = message_status.folder_information.total_folders;  
+
+        send(client_socket, &information_of_folder, MAX_LENGTH * MAX_LENGTH, 0);
+
         printf("Response of folder information sent successfully.\n");
     }
     else if ( message_status.operation_number == 7 ) { 
