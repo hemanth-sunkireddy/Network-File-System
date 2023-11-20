@@ -53,11 +53,17 @@
 ### Testing multiple clients to the naming server. 
 // Need to implement. 
 
-### Testing multiple clients to the storage server. 
-// Need to implement. 
+ ### LRU CACHE IMPLEMENTATION: 
+// NEED TO IMPLEMENT. 
 
-### Concurrent file Reading. 
-// Need to implement. 
+### BOOKKEEPING: 
+// NEED TO IMPLEMENT. 
+
+### ERROR CODES: 
+// NEED TO IMPLEMENT. 
+
+### REDUNDANCY: 
+// NEED TO IMPLEMENT. 
 
 ### Assumptions: 
 1. If two different storage servers have same file name at the root level. ( NOT EXISTENCE CASE). 
