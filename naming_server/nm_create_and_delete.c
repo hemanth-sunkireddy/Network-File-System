@@ -109,6 +109,12 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                     saveFolderCounts(ssx); // Save the updated file counts
                     *storage_server_connection_socket = ssx[i].ss_socket;
                     //savePathsAccessible(ssx); 
+
+                     // Duplicating the creation of file in the respective duplicated servers. 
+                        int port_of_duplicated_server1 = 10 + port;
+                        int port_of_duplicated_server2 = 20 + port; 
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server1);
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server2);
                     break;
                 }
             }
@@ -186,6 +192,13 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                 send(ssx[i].ss_socket, &FilenameAndOperation, sizeof(fileNameAndOperation), 0);
                 printf("Sent File or folder name and Operation number successfully\n");
                 *storage_server_connection_socket = ssx[i].ss_socket;
+
+
+                 // Duplicating the creation of file in the respective duplicated servers. 
+                        int port_of_duplicated_server1 = 10 + port;
+                        int port_of_duplicated_server2 = 20 + port; 
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server1);
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server2);
                 break;
             }
         }
@@ -236,6 +249,12 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                             strcpy(ssx[i].paths_accessible[ssx[i].num_of_files+ssx[i].num_of_folders].path,str);
                             }
                         *storage_server_connection_socket = ssx[i].ss_socket;
+
+                         // Duplicating the creation of file in the respective duplicated servers. 
+                        int port_of_duplicated_server1 = 10 + port;
+                        int port_of_duplicated_server2 = 20 + port; 
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server1);
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server2);
                     }
                 }
         }

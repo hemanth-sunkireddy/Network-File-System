@@ -51,13 +51,13 @@
 9. Then source storage server sends this status back to the client - False
 
 ### Testing multiple clients to the naming server. 
-1. Testing of multiple clients to the naming server - True. 
+1. Testing of multiple clients to the naming server - True.
 
  ### LRU CACHE IMPLEMENTATION: 
 // NEED TO IMPLEMENT. 
 
 ### BOOKKEEPING: 
-// NEED TO IMPLEMENT. 
+1. Bookkeeping implementation - True
 
 ### ERROR CODES: 
 // NEED TO IMPLEMENT. 
