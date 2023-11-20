@@ -31,7 +31,7 @@ void Info(fileNameAndOperation *file_or_folder_details){
         if ( file_or_folder_details->operation_number <= 5){ 
                 printf("Enter the file name: ");
         }
-        else{
+        else if(file_or_folder_details->operation_number <= 9 && file_or_folder_details->operation_number>=6){
                 printf("Enter the Folder name: ");
         }
         scanf("%s", file_or_folder_details->name_of_file_or_folder);
@@ -73,30 +73,37 @@ int main(){
           // Send the request to server
            fileNameAndOperation file_or_folder_details;
            Info(&file_or_folder_details);
-           send(client_socket, &file_or_folder_details, sizeof(file_or_folder_details), 0); ////
-     
-          
+           send(client_socket, &file_or_folder_details, MAX_LENGTH, 0); 
+
+
+          // Copying the files and folders details updation. 
+          Copy_source_dest src_dest_path_oper;
+          if(file_or_folder_details.operation_number == 10 || file_or_folder_details.operation_number == 11){
+                char destination_path[MAX_LENGTH];
+                printf("Enter Destination Path\n");
+                scanf("%s", destination_path);
+                int send_status1 = send(client_socket,destination_path , MAX_LENGTH, 0);  //send destination path to the storage server. 
+                printf("sending status: %d\n", send_status1);
+            }
+
+
           // Recieve the response from server
           printf("\nWait till the response from server:\n");
 
-          if(file_or_folder_details.operation_number==3 ||file_or_folder_details.operation_number==4 ||file_or_folder_details.operation_number==8 ||file_or_folder_details.operation_number==9 ||file_or_folder_details.operation_number==10 ||file_or_folder_details.operation_number==11 ){
+          if(file_or_folder_details.operation_number==3 ||file_or_folder_details.operation_number==4 ||file_or_folder_details.operation_number==8 ||file_or_folder_details.operation_number==9){
             
-            if(file_or_folder_details.operation_number==10 ||file_or_folder_details.operation_number==11){
-                source_dest path;
-                printf("Enter Source Path\n");
-                scanf("%s", path.source_path);
-                printf("Enter Destination Path\n");
-                scanf("%s", path.destination_path);
-                send(client_socket, &path, sizeof(path), 0);  //send path after sending  ,file_or_folder_details
-              
-            }
-            
+        
              char message_status[MAX_LENGTH];
             recv(client_socket, message_status, MAX_LENGTH, 0);
              
             printf("OPERATION STATUS:%s\n", message_status);
             close(client_socket);
             printf("Disconnected from the Naming Server.\n");
+          }
+          else if ( file_or_folder_details.operation_number == 10 || file_or_folder_details.operation_number == 11 ){ 
+            printf("MESSAGE FROM STORAGE SERVER: COPYING FILE SUCCESSFUL.\n");
+            close(client_socket);
+            printf("Disconnected from the Naming server.\n");
           }
           else{ //1,2,5,6,7
              

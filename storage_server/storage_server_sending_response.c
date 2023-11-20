@@ -94,5 +94,10 @@ void send_server_request(acknowledgmentMessage message_status, int client_socket
         send(client_socket, message_status.status_message, MAX_LENGTH, 0);
         printf("Response of creating a Folder sent successfully.\n");
     }
+    else if ( message_status.operation_number == 11 ) { 
+        printf("Content of the file: %s\n", message_status.status_message);
+        send(client_socket, message_status.status_message, MAX_LENGTH, 0);
+        printf("Response of copying a file sent successfully.\n");
+    }
 
 }

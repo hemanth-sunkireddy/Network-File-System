@@ -8,12 +8,13 @@ void response_recieve_or_send(SS_Info ssx[MAX_STORAGE_SERVERS], int client_socke
     char message_from_storage_server[MAX_LENGTH];
     
 
-    // For the create and delete operation. 
-    if ( operation_number == 3 || operation_number == 4 || operation_number == 8 || operation_number == 9 ) { 
+    // For the create and delete operation as well as copying copy file or folder operations also.
+    if ( operation_number == 3 || operation_number == 4 || operation_number == 8 || operation_number == 9) { 
         int recieving_status = recv(storage_server_connection_socket, message_from_storage_server, MAX_LENGTH, 0);
         printf("Recieving status from storage server: %d\n", recieving_status);
         printf("MESSAGE FROM STORAGE SERVER: %s\n", message_from_storage_server);
     }
+    
 
     // Now sending the recieved data of the storage server to the client. 
     if ( operation_number == 3 || operation_number == 4 || operation_number == 8 || operation_number == 9 ){
@@ -22,6 +23,6 @@ void response_recieve_or_send(SS_Info ssx[MAX_STORAGE_SERVERS], int client_socke
     }
     else{
         send(client_socket,data_of_ss_to_client, MAX_LENGTH, 0);
-        printf("Storage server details sent to client successfully.\n");
+        printf("Storage server details/ status message sent to client successfully.\n");
     }
 }

@@ -70,11 +70,27 @@ int main(){
         int storage_server_connection_socket; 
         Data_of_SS_SentToClient data_of_ss_to_client;
 
-        message_status = obtain_ss_info(ssx,ss_socket, message_status,client_operation_number_path_name, &storage_server_connection_socket, &data_of_ss_to_client);
+
+        // Defining the struct of the operation 10 and 11. 
+        Copy_source_dest copy_src_dest_oper;
+        strcpy(copy_src_dest_oper.source_path, client_operation_number_path_name.name_of_file_or_folder);
+        copy_src_dest_oper.operation_number = client_operation_number_path_name.operation_number;
+        if (client_operation_number_path_name.operation_number == 10 || client_operation_number_path_name.operation_number == 11 ) { 
+          char destinaion_path[MAX_LENGTH];
+          int recieving_status_2 = recv(ss_socket, destinaion_path, MAX_LENGTH, 0);
+          printf("Recieving status of the destination path: %d\n", recieving_status_2);
+          printf("Destination path: %s\n",destinaion_path);
+          strcpy(copy_src_dest_oper.destination_path, destinaion_path);
+        }
+
+        
+        message_status = obtain_ss_info(ssx,ss_socket, message_status,client_operation_number_path_name, &storage_server_connection_socket, &data_of_ss_to_client, &copy_src_dest_oper);
 
         // Recieve the response from the storage server. 
         response_recieve_or_send(ssx, ss_socket, message_status, client_operation_number_path_name.operation_number, storage_server_connection_socket, &data_of_ss_to_client);
-        
+        if(client_operation_number_path_name.operation_number==10 || client_operation_number_path_name.operation_number==11){
+          close(ss_socket);
+        }
 
         // Sending the response 
         //send_server_request(message_status, ss_socket);

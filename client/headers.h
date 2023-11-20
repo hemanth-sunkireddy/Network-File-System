@@ -39,6 +39,13 @@ typedef struct source_dest{
 }source_dest;
 
 
+typedef struct Copy_source_dest{
+    int operation_number;
+    char source_path[50];
+    char destination_path[50];
+}Copy_source_dest;
+
+
 
 typedef struct Packet
 {

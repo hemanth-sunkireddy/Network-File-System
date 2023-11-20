@@ -87,7 +87,20 @@ typedef struct list_in_given_path{
   directory_or_file_name names_of_file_or_folder[MAX_LENGTH];
 }list_in_given_path;
 
+typedef struct Copy_source_dest{
+    int operation_number;
+    char source_path[MAX_LENGTH_OF_PATH];
+    char destination_path[MAX_LENGTH_OF_PATH];
+    int source_or_destination_storage_server;    // 0 for source ss, 1 for destination ss. 
+    char file_content[MAX_LENGTH];
+    int port_number; 
+}Copy_source_dest;
 
+typedef struct Data_of_SS_SentForCopying{
+    int SS_port;
+    char SS_ip[MAX_LENGTH];
+    int SS_no;
+}Data_of_SS_SentForCopying;
 
 typedef struct acknowledgmentMessage{
     int operation_number;
@@ -107,6 +120,8 @@ acknowledgmentMessage reading_the_file(char file_name[2*MAX_LENGTH], acknowledgm
 acknowledgmentMessage additional_information_of_file(char file_name[MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage listing_all_files_and_folders(char folder_name[MAX_LENGTH], acknowledgmentMessage message_status);
 acknowledgmentMessage writing_the_file(char file_name[2*MAX_LENGTH], acknowledgmentMessage message_status, char data_from_client[MAX_LENGTH]);
+acknowledgmentMessage copying_the_file(char final_path_of_the_source[MAX_LENGTH_OF_PATH], Copy_source_dest details_of_source_destination_storage_server, acknowledgmentMessage message_status, int destination_ss_port_no);
+
 
 acknowledgmentMessage receive_client_request(int client_socket, struct acknowledgmentMessage message_status, int index_of_storage_server, int* current_storage_servers);
 void send_server_request(acknowledgmentMessage message_status, int client_socket);

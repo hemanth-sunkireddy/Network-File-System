@@ -80,7 +80,14 @@ typedef struct list_in_given_path{
   directory_or_file_name names_of_file_or_folder[MAX_LENGTH];
 }list_in_given_path;
 
-
+typedef struct Copy_source_dest{
+    int operation_number;
+    char source_path[50];
+    char destination_path[50];
+    int source_or_destination_storage_server;    // 0 for source ss, 1 for destination ss. 
+    char file_content[MAX_LENGTH];
+    int port_number; 
+}Copy_source_dest;
 
 typedef struct acknowledgmentMessage{
     int operation_number;
@@ -107,7 +114,7 @@ typedef struct Data_Sent_To_SS{
     fileNameAndOperation filenameandoperation;
 }Data_Sent_To_SS;
 
-acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int client_socket, struct acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name, int* storage_server_connection_socket, Data_of_SS_SentToClient* data_of_ss_to_client);
+acknowledgmentMessage obtain_ss_info(SS_Info ssx[MAX_STORAGE_SERVERS],int client_socket, struct acknowledgmentMessage message_status, fileNameAndOperation operation_and_fileorfolder_name, int* storage_server_connection_socket, Data_of_SS_SentToClient* data_of_ss_to_client, Copy_source_dest* copy_src_dest_oper);
 void response_recieve_or_send(SS_Info ssx[MAX_STORAGE_SERVERS], int client_socket,struct acknowledgmentMessage message_status, int operation_number, int storage_server_connection_socket, Data_of_SS_SentToClient* data_of_ss_to_client);
 void saveFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void loadFileCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
@@ -116,6 +123,7 @@ void loadFolderCounts(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int* storage_server_connection_socket);
 void CreateNewStorageServer(SS_Info ssx[MAX_STORAGE_SERVERS]);
 void ReadorWriteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int ss_socket, Data_of_SS_SentToClient* data_of_ss_to_client);
+void CopyFileorFolderOperations(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, Copy_source_dest* copy_src_dest_oper, int* storage_server_connection_socket);
 
 extern char *ip ;
 extern int port;

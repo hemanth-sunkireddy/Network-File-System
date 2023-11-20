@@ -11,6 +11,11 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     printf("Current storage servers after connection. %d\n", current_storage_server_temp);
     fileNameAndOperation file_or_folder_details;
 
+
+    // Copying details struct. 
+    Data_of_SS_SentForCopying data_received_of_des_ss;
+
+
     recv(client_socket, &file_or_folder_details, MAX_LENGTH, 0);
     
     printf("client/namingServer Asked for this file / folder: %s\n", file_or_folder_details.name_of_file_or_folder);
@@ -18,9 +23,11 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     int operation_number = file_or_folder_details.operation_number; 
 
     printf("The operation number he had choosen.:%d\n", operation_number);
+    printf("Dummy file/folder name: %s\n",file_or_folder_details.name_of_file_or_folder);
 
     message_status.operation_number = file_or_folder_details.operation_number; 
-    
+
+
     char final_path_after_appending_storage_server_number[MAX_LENGTH];
     strcpy(final_path_after_appending_storage_server_number, "SS");
 
@@ -37,7 +44,7 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
     printf("Final path along with server: %s\n", final_path_after_appending_storage_server_number);
 
     
-    if ( operation_number == 3 || operation_number == 4 || operation_number == 8 || operation_number == 9 ) { 
+    if ( operation_number == 3 || operation_number == 4 || operation_number == 8 || operation_number == 9 || operation_number == 10 || operation_number == 11 ) { 
         printf("Storage server connected.\n");
         if ( operation_number == 3 ) { 
             message_status = deleting_the_file(final_path_after_appending_storage_server_number,message_status);
@@ -53,6 +60,22 @@ acknowledgmentMessage receive_client_request(int client_socket, struct acknowled
         }
         else if ( operation_number == 9 ) { 
             message_status = creating_the_folder(final_path_after_appending_storage_server_number, message_status);
+            return message_status;
+        }
+        else if ( operation_number == 11 ){ 
+            Copy_source_dest details_of_the_source_dest_storage_server; 
+            int receiving_status=recv(client_socket,&details_of_the_source_dest_storage_server,MAX_LENGTH,0);
+            char port_number_of_respective[MAX_LENGTH];
+            int receiving_status_of_port_number = recv(client_socket, port_number_of_respective, MAX_LENGTH, 0);
+
+            printf("Receiving status: %d\n",receiving_status);
+            printf("Source path: %s\n",details_of_the_source_dest_storage_server.source_path);
+            printf("Destination path: %s\n",details_of_the_source_dest_storage_server.destination_path);
+            printf("Source or destination storage server: %d\n", details_of_the_source_dest_storage_server.source_or_destination_storage_server);
+            printf("CUrrent storage server count: %s\n", port_number_of_respective);
+            int port_number; 
+            sscanf(port_number_of_respective, "%d", &port_number);
+            message_status = copying_the_file(final_path_after_appending_storage_server_number, details_of_the_source_dest_storage_server, message_status, port_number);
             return message_status;
         }
 
