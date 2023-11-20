@@ -1,5 +1,27 @@
 #include "headers.h"
 
+
+void duplicating_create_and_delete(fileNameAndOperation FilenameAndOperation, int port_of_duplicated_server){
+
+                        int temp_socket_to_duplicate; 
+                        temp_socket_to_duplicate = socket(AF_INET, SOCK_STREAM, 0);
+                        if (temp_socket_to_duplicate < 0){
+                            perror("Socket error");
+                            exit(1);
+                        }
+                        else{
+                            printf("TCP SS_CLIENT SOCKET CREATED for NS.\n");
+                        }
+                        struct sockaddr_in client_address_of_duplicate;
+                        memset(&client_address_of_duplicate, '\0', sizeof(client_address_of_duplicate));
+                        client_address_of_duplicate.sin_family = AF_INET;
+                        client_address_of_duplicate.sin_port = port_of_duplicated_server;
+                        client_address_of_duplicate.sin_addr.s_addr = inet_addr(ip);
+                        // Connect to the server
+                        connect(temp_socket_to_duplicate, (struct sockaddr*)&client_address_of_duplicate, sizeof(client_address_of_duplicate));
+                        send(temp_socket_to_duplicate,&FilenameAndOperation,sizeof(fileNameAndOperation),0);
+}
+
 void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMessage message_status, fileNameAndOperation FilenameAndOperation, int* storage_server_connection_socket) {
     int operation_num = FilenameAndOperation.operation_number;
     char path[MAX_PATH_LENGTH];
@@ -50,6 +72,13 @@ void CreateandDeleteOperation(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgmentMe
                     printf("%d\n",ssx[i].num_of_files);
                     saveFileCounts(ssx); // Save the updated file 
                     //savePathsAccessible(ssx); 
+
+                    // Duplicating the creation of file in the respective duplicated servers. 
+                        int port_of_duplicated_server1 = 10 + port;
+                        int port_of_duplicated_server2 = 20 + port; 
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server1);
+                        duplicating_create_and_delete(FilenameAndOperation, port_of_duplicated_server2);
+
                     break;
                 } else if (operation_num == 9 && ssx[i].num_of_folders < MAX_FOLDER_LIMIT) {
                     // Creating a folder
