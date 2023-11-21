@@ -4,12 +4,12 @@
     1. After running make command in the final-project-73 directory, change to naming_server directory
     2. Run ./naming_server_run
 
-Initialisation
+Initialisation:
     The port is initialised to 5000 and the ip to be 127.0.0.1.
     Maximum number of storage server are initialised with port numbers equal to (5000+storage server number) and the ip being the same.
     Initially, the client connects to the naming server and sends the operation number which the client needs to be implemented.
 
-Operations implementation
+Operations implementation: 
     (For the operation numbers list, refer to the client's code)
     Create and delete operations:
         If the operation number lies in the set {3,4,8,9}, the naming server finds which storage server is not full and creates the file there if it is a single file or folder by connecting to the respective storage server and stored in the accessible paths.
