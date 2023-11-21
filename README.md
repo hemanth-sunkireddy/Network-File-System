@@ -30,53 +30,19 @@ NOTE: Run ./run_storage_server11 ./run_storage_server21 similarly respective sto
 ``` 
 
 ### Testing: 
-#### Copy File Operation
-1. Client will give source file path and destination file path - True
-2. Naming server will check for the storage server source path and storage server destination path - True
-3. Naming server Connects to the source storage server and sends all the necessary details of the destination storage server - True
-4. Source storage server recieves the details of the file contents to the naming server - True
-5. Naming server connects to the destination path storage server - True
-6. Naming sends the file name and file content to the destination path storage server - True
-7. Destination storage server recieves the file name and file content and adds it to the respective path - True 
-8. Destination storage server sends the acknowledgment status to the Naming server. - True 
-9. Then source storage server sends this status back to the client - True
-
-#### Copy Folder operation 
-1. Client will give source folder path and destination folder path - False
-2. Naming server will check for the storage server source path and storage server destination path - False
-3. Naming server Connects to the source storage server and sends all the necessary details of the destination storage server - False 
-4. Source storage server recieves the details of the destination storage server - False 
-5. Source storage server connects to the destination path storage server - False
-6. Source storage server sends the folder name and folder content to the destination path storage server - False 
-7. Destination storage server recieves the file name and file content and adds it to the respective path - False 
-8. Destination storage server sends the acknowledgment status to the source storage server. - False 
-9. Then source storage server sends this status back to the client - False
-
-### Testing multiple clients to the naming server. 
-1. Testing of multiple clients to the naming server - True.
 
  ### LRU CACHE IMPLEMENTATION: 
 // NEED TO IMPLEMENT. 
-
-### BOOKKEEPING: 
-1. Bookkeeping implementation - True
-
-### ERROR CODES: 
-// NEED TO IMPLEMENT. 
-
+ 
 ### REDUNDANCY: 
-// NEED TO IMPLEMENT. 
-
-### Assumptions: 
-1. If two different storage servers have same file name at the root level. ( NOT EXISTENCE CASE). 
-
+1. Create and delete operations in Duplicated servers - True
+2. Read and write operations from the duplicated servers - False 
 
 ### Storage Server
 1. In README file of storage_server folder. 
+ 
 
-### Naming Server 
-1. In README file of naming_server folder. 
-
-### client 
-1. In README file of client folder.
-
+### Documentation of the project: 
+ ```
+https://www.notion.so/OSN-COURSE-PROJECT-DOCUMENTATION-c2c5a873c9ab4f8593b53ec081a5ea55?pvs=4
+```
