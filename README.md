@@ -11,6 +11,8 @@
 7. For naming server activation, Go through naming_server folder and run ./naming_server_run 
 8. For client activation, Go through client folder and run ./client_run 
 
+NOTE: Run ./run_storage_server11 ./run_storage_server21 similarly respective storage servers to duplicate the code in the background. 
+
 ### Operations 
 
 ```
