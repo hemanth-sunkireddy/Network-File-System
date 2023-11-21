@@ -1,6 +1,7 @@
 # Naming server Documentation
 
 **How to run**
+
     1. After running make command in the final-project-73 directory, change to naming_server directory
     2. Run ./naming_server_run
 
