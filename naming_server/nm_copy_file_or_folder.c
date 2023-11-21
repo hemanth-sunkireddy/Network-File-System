@@ -122,5 +122,74 @@ void CopyFileorFolderOperations(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgment
             printf("Sending status: %d\n",sending_status_of_destination_ss);
             printf("Sent source, dest SS details to the destination storage server.\n");
 
+    }
+    else if(FilenameAndOperation.operation_number==10){
+        char dest_path[MAX_PATH_LENGTH];
+        int dest_ss_port;
+        strcpy(dest_path,copy_src_dest_oper->destination_path);
+        int i;
+        for(i=0;i<MAX_STORAGE_SERVERS;i++){
+            int count=0;
+            for(int j=0;j<ssx[i].num_of_files+ssx[i].num_of_folders;j++){
+                if((strncmp(dest_path,ssx[i].paths_accessible[j].path,strlen(ssx[i].paths_accessible[j].path))==0 && dest_path[strlen(ssx[i].paths_accessible[j].path)]=='\0') || (strncmp(dest_path,ssx[i].paths_accessible[j].path,strlen(ssx[i].paths_accessible[j].path))==0 && dest_path[strlen(ssx[i].paths_accessible[j].path)]=='/' && dest_path[strlen(ssx[i].paths_accessible[j].path) + 1] != '\0')){
+                    dest_ss_port=5000+i;
+                    count++;
+                    break;
+                }
+            }
+            if(count==1){
+                break;
+            }
         }
+        int dest_ss_no=i;
+        printf("Destination port: %d\n",dest_ss_port);
+        printf("Destination ss_no: %d\n",dest_ss_no);
+        char src_path[MAX_PATH_LENGTH];
+        int src_ss_port;
+        strcpy(src_path,copy_src_dest_oper->source_path);
+        for(int i=0;i<MAX_STORAGE_SERVERS;i++){
+                int temp_count=0; 
+                for(int j=0;j<ssx[i].num_of_files+ssx[i].num_of_folders;j++){
+                    if((strncmp(src_path,ssx[i].paths_accessible[j].path,strlen(ssx[i].paths_accessible[j].path))==0 && src_path[strlen(ssx[i].paths_accessible[j].path)]=='\0') || (strncmp(src_path,ssx[i].paths_accessible[j].path,strlen(ssx[i].paths_accessible[j].path))==0 && src_path[strlen(ssx[i].paths_accessible[j].path)]=='/' && src_path[strlen(ssx[i].paths_accessible[j].path) + 1] != '\0')){
+                        src_ss_port=5000+i;
+                        printf("Source port: %d\n",src_ss_port);
+                        temp_count++;
+                    }
+                }
+                if(temp_count==1){
+                    break;
+                }
+        }
+        int src_ss_no=i;
+        char source_dir[5*MAX_LENGTH];
+        strcpy(source_dir,"../storage_server/SS");
+        char source_ss_no_in_char[5];
+        sprintf(source_ss_no_in_char, "%d",src_ss_no+1);
+        strcat(source_dir,source_ss_no_in_char);
+        strcat(source_dir,"/");
+        strcat(source_dir,src_path);
+
+        printf("Source path after final addition: %s\n", source_dir);
+
+
+
+        char destination_path[5 * MAX_LENGTH];
+        strcpy(destination_path,"../storage_server/SS");
+        char destination_ss_no_in_char[5];
+        sprintf(destination_ss_no_in_char, "%d",  dest_ss_no + 1 ) ; 
+        strcat(destination_path, destination_ss_no_in_char);
+        strcat(destination_path, "/");
+        strcat(destination_path, dest_path);
+
+        printf("Destination path final addition: %s\n", destination_path);
+
+
+        // Concatenate the command string
+        char command[10 * MAX_LENGTH];
+        sprintf(command, "cp -R %s %s", source_dir, destination_path);
+
+        // Execute the command
+        system(command);
+
+    }
 }
