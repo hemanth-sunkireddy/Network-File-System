@@ -161,7 +161,7 @@ void CopyFileorFolderOperations(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgment
                 }
         }
         int src_ss_no=i;
-        char source_dir[5*MAX_LENGTH];
+        char source_dir[MAX_LENGTH];
         strcpy(source_dir,"../storage_server/SS");
         char source_ss_no_in_char[5];
         sprintf(source_ss_no_in_char, "%d",src_ss_no+1);
@@ -173,7 +173,7 @@ void CopyFileorFolderOperations(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgment
 
 
 
-        char destination_path[5 * MAX_LENGTH];
+        char destination_path[MAX_LENGTH];
         strcpy(destination_path,"../storage_server/SS");
         char destination_ss_no_in_char[5];
         sprintf(destination_ss_no_in_char, "%d",  dest_ss_no + 1 ) ; 
@@ -185,7 +185,7 @@ void CopyFileorFolderOperations(SS_Info ssx[MAX_STORAGE_SERVERS], acknowledgment
 
 
         // Concatenate the command string
-        char command[10 * MAX_LENGTH];
+        char command[3 * MAX_LENGTH];
         sprintf(command, "cp -R %s %s", source_dir, destination_path);
 
         // Execute the command
