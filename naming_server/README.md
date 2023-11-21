@@ -11,6 +11,7 @@ Initialisation:
 
 Operations implementation
     (For the operation numbers list, refer to the client's code)
+    
     Create and delete operations:
         If the operation number lies in the set {3,4,8,9}, the naming server finds which storage server is not full and creates the file there if it is a single file or folder by connecting to the respective storage server and stored in the accessible paths.
 
