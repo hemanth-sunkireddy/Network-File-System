@@ -7,16 +7,16 @@ acknowledgmentMessage creating_the_folder(char folder_name[MAX_LENGTH], acknowle
     char message[MAX_LENGTH];
 
     if (status == 0) {
-        sprintf(message, "Folder \"%s\" created successfully.\n", folder_name);
+        strcpy(message, "Folder created successfully");
     } else {
         if (errno == EEXIST) {
-            sprintf(message, "Folder \"%s\" already exists.\n", folder_name);
+            strcpy(message, "Folder already exists");
         } else if (errno == EACCES) {
-            sprintf(message, "Permission denied to create folder \"%s\".\n", folder_name);
+            strcpy(message, "Permission denied to create folder");
         } else if (errno == ENOENT) {
-            sprintf(message, "The parent folder for \"%s\" does not exist.\n", folder_name);
+            strcpy(message, "The parent folder does not exist.");
         } else {
-            sprintf(message, "Failed to create folder \"%s\". Error: %s\n", folder_name, strerror(errno));
+            strcpy(message, "Failed to create folder");
         }
     }
 

@@ -1,10 +1,10 @@
 #include "headers.h"
 
-void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details){
+acknowledgmentMessage client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details,acknowledgmentMessage message_status){
 
     // Acknowledgment from the storage server. 
     if ( file_or_folder_details.operation_number == 1){
-        acknowledgmentMessage message_status;  
+        
         char data_of_file[MAX_LENGTH];         
         int bytes_received = recv(client_socket, &message_status, MAX_LENGTH, 0);
         int bytes_second_received = recv(client_socket, data_of_file, MAX_LENGTH, 0);
@@ -51,11 +51,11 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
         else{
             printf("Error in recieving status message from storage server.\n");
         }
-                
+        strcpy(message_status.status_message,status_recieved_from_storage_server);        
 
     }
     if ( file_or_folder_details.operation_number == 5){
-         acknowledgmentMessage message_status;
+        //acknowledgmentMessage message_status;
         if(recv(client_socket , &message_status , MAX_LENGTH ,0)==-1){
             printf("error in getting folder data\n");
         }
@@ -80,7 +80,7 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
         else{
             printf("Status of the operation: %s\n", message_from_storage_server);
         }
-
+        strcpy(message_status.status_message,message_from_storage_server);
 
         // Folder information 
         folderInformation information_of_folder; 
@@ -100,14 +100,14 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
     if ( file_or_folder_details.operation_number == 7){
         
         // Listing files and folders in given folder. 
-        char message_status[MAX_LENGTH];
-        if(recv(client_socket , message_status , MAX_LENGTH,0) == -1){
+        char message_status1[MAX_LENGTH];
+        if(recv(client_socket , message_status1 , MAX_LENGTH,0) == -1){
             printf("error in getting folder data\n");
         }
         else{
-            printf("Operation status: %s\n", message_status);
+            printf("Operation status: %s\n", message_status1);
         }
-
+        strcpy(message_status.status_message,message_status1);
         char total_number_of_files[MAX_LENGTH];
         recv(client_socket, total_number_of_files, MAX_LENGTH, 0);
         printf("Total files: %s\n", total_number_of_files);
@@ -126,4 +126,5 @@ void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_
        printf("Done listing all files and folders.\n");
 
     }
+    return message_status;
 }

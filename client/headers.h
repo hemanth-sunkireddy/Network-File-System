@@ -96,7 +96,7 @@ typedef struct acknowledgmentMessage{
 
 
 
-void client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details);
+acknowledgmentMessage client_receving_data(int client_socket,fileNameAndOperation file_or_folder_details, acknowledgmentMessage message_status);
 
 
 
