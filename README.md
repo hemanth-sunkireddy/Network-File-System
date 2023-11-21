@@ -29,17 +29,12 @@ NOTE: Run ./run_storage_server11 ./run_storage_server21 similarly respective sto
 11- Copy File
 ``` 
 
-### Testing: 
-
- ### LRU CACHE IMPLEMENTATION: 
-// NEED TO IMPLEMENT. 
- 
-### REDUNDANCY: 
-1. Create and delete operations in Duplicated servers - True
-2. Read and write operations from the duplicated servers - False 
 
 ### Storage Server
-1. In README file of storage_server folder. 
+1. In README file of storage_server folder.
+
+### Naming Server 
+1. In README file of naming server folder. 
  
 
 ### Documentation of the project: 
