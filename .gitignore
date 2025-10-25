@@ -1,5 +1,2 @@
 .vscode 
 **/*.txt
-naming_server/naming_server_run
-client/client_run
-storage_server/storage_server_run
