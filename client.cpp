@@ -8,14 +8,16 @@ using namespace std;
 #define PORT 8080
 #define SERVER_IP "127.0.0.1"
 
-int main() {
+int main()
+{
     int sock = 0;
     struct sockaddr_in serv_addr, local_addr;
     char buffer[1024] = {0};
     string message;
 
     // Create socket
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+    {
         perror("Socket creation error");
         return -1;
     }
@@ -24,13 +26,15 @@ int main() {
     serv_addr.sin_port = htons(PORT);
 
     // Convert IPv4 address from text to binary form
-    if (inet_pton(AF_INET, SERVER_IP, &serv_addr.sin_addr) <= 0) {
+    if (inet_pton(AF_INET, SERVER_IP, &serv_addr.sin_addr) <= 0)
+    {
         perror("Invalid address / Address not supported");
         return -1;
     }
 
     // Connect to the Naming Server
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
+    {
         perror("Connection Failed");
         return -1;
     }
@@ -51,10 +55,30 @@ int main() {
     cout << "Client Port : " << clientPort << endl;
     cout << "Server IP   : " << SERVER_IP << endl;
     cout << "Server Port : " << PORT << endl;
-    cout << "==============================\n" << endl;
+    cout << "==============================\n"
+         << endl;
 
-    // Main loop for user options
-    while (true) {
+    // --- Initial Handshake ---
+    string handshakeMsg = "Client";
+    send(sock, handshakeMsg.c_str(), handshakeMsg.size(), 0);
+    cout << "→ Sent handshake: " << handshakeMsg << endl;
+
+    memset(buffer, 0, sizeof(buffer));
+    ssize_t bytesRead = read(sock, buffer, sizeof(buffer));
+    if (bytesRead > 0)
+    {
+        cout << "← Received response from server: " << buffer << endl;
+    }
+    else
+    {
+        cout << "[!] No handshake response from server. Exiting." << endl;
+        close(sock);
+        return 0;
+    }
+
+    // --- Main communication loop ---
+    while (true)
+    {
         cout << "\nChoose an option:" << endl;
         cout << "1. Send Hello" << endl;
         cout << "2. Exit" << endl;
@@ -62,13 +86,15 @@ int main() {
 
         int choice;
         cin >> choice;
-        cin.ignore();  // Clear newline
+        cin.ignore(); // clear newline from input buffer
 
-        if (choice == 1) {
+        if (choice == 1)
+        {
             message = "Hello from client";
 
             ssize_t bytesSent = send(sock, message.c_str(), message.length(), 0);
-            if (bytesSent <= 0) {
+            if (bytesSent <= 0)
+            {
                 cout << "[!] Failed to send message. Connection might be lost." << endl;
                 break;
             }
@@ -76,19 +102,26 @@ int main() {
             cout << "\n→ Sent message to server: " << message << endl;
 
             memset(buffer, 0, sizeof(buffer));
-            ssize_t bytesRead = read(sock, buffer, sizeof(buffer));
-            if (bytesRead > 0) {
+            bytesRead = read(sock, buffer, sizeof(buffer));
+            if (bytesRead > 0)
+            {
                 cout << "← Received response from server: " << buffer << endl;
-            } else {
+            }
+            else
+            {
                 cout << "[!] No response or connection lost." << endl;
                 break;
             }
-
-        } else if (choice == 2) {
-            cout << "\n[x] Closing connection and exiting..." << endl;
+        }
+        else if (choice == 2)
+        {
+            string exitMsg = "EXIT";
+            send(sock, exitMsg.c_str(), exitMsg.size(), 0);
+            cout << "\n[x] Sent EXIT signal to server and closing connection..." << endl;
             break;
-
-        } else {
+        }
+        else
+        {
             cout << "[!] Invalid choice. Try again." << endl;
         }
     }
@@ -96,7 +129,8 @@ int main() {
     // Close socket
     close(sock);
     cout << "\n💤 Disconnected from Naming Server." << endl;
-    cout << "Client (" << clientIP << ":" << clientPort << ") terminated gracefully.\n" << endl;
+    cout << "Client (" << clientIP << ":" << clientPort << ") terminated gracefully.\n"
+         << endl;
 
     return 0;
 }
