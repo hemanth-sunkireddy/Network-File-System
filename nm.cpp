@@ -8,7 +8,7 @@
 #include <vector>
 #include <random>
 #include <fstream>
-#include<iomanip>
+#include <iomanip>
 
 using namespace std;
 
@@ -17,34 +17,73 @@ using namespace std;
 // Registry of storage servers: Port -> IP
 map<int, string> storageServers;
 
-// Registry of files: filename -> (IP, Port)
-map<string, pair<string, int>> fileToServer;
+// ==============================
+// Trie Structure for File Lookup
+// ==============================
+struct TrieNode
+{
+    map<char, TrieNode *> children;
+    bool isEndOfFile = false;
+    string ip;
+    int port = -1;
+};
 
+TrieNode *root = new TrieNode();
 
+// Insert new file info
+void insertFile(const string &filename, const string &ip, int port)
+{
+    TrieNode *node = root;
+    for (char c : filename)
+    {
+        if (!node->children[c])
+            node->children[c] = new TrieNode();
+        node = node->children[c];
+    }
+    node->isEndOfFile = true;
+    node->ip = ip;
+    node->port = port;
+}
+
+// Search file info
+pair<string, int> searchFile(const string &filename)
+{
+    TrieNode *node = root;
+    for (char c : filename)
+    {
+        if (!node->children[c])
+            return {"", -1};
+        node = node->children[c];
+    }
+    if (node->isEndOfFile)
+        return {node->ip, node->port};
+    return {"", -1};
+}
+
+// ==============================
+// Logging Function
+// ==============================
 void logToFile(const string &message)
 {
-
-    ofstream logFile("log.txt", ios::app); // open in append mode
+    ofstream logFile("log.txt", ios::app);
     if (!logFile)
     {
         cerr << "[ERROR] Failed to open log file!" << endl;
         return;
     }
 
-    // Get current timestamp
     auto now = chrono::system_clock::now();
     time_t now_c = chrono::system_clock::to_time_t(now);
     tm *localTime = localtime(&now_c);
 
-    // Write timestamp + message
     logFile << "[" << put_time(localTime, "%Y-%m-%d %H:%M:%S") << "] "
             << message << endl;
 
-    logFile.close(); // ensure write is flushed
+    logFile.close();
 }
 
 // ---------------------------------------------------------------------------
-// Function to continuously monitor a storage server connection
+// Monitor Storage Server
 // ---------------------------------------------------------------------------
 void monitorStorageServer(int socket_fd, string clientIP, int registeredPort)
 {
@@ -57,26 +96,14 @@ void monitorStorageServer(int socket_fd, string clientIP, int registeredPort)
         if (bytesRead <= 0)
         {
             cout << "[x] Storage Server disconnected: " << clientIP << ":" << registeredPort << endl;
+            logToFile("[x] Storage Server disconnected: " + clientIP + ":" + to_string(registeredPort));
 
-            // Remove from registry
             auto it = storageServers.find(registeredPort);
             if (it != storageServers.end() && it->second == clientIP)
             {
                 storageServers.erase(it);
                 cout << "[#] Removed from registry. Active servers: "
                      << storageServers.size() << endl;
-
-                // Remove all files belonging to this server
-                for (auto fIt = fileToServer.begin(); fIt != fileToServer.end();)
-                {
-                    if (fIt->second.first == clientIP && fIt->second.second == registeredPort)
-                    {
-                        cout << "[#] Removing file mapping for: " << fIt->first << endl;
-                        fIt = fileToServer.erase(fIt);
-                    }
-                    else
-                        ++fIt;
-                }
             }
 
             close(socket_fd);
@@ -92,7 +119,7 @@ void monitorStorageServer(int socket_fd, string clientIP, int registeredPort)
 }
 
 // ---------------------------------------------------------------------------
-// Function to select a random available storage server
+// Select Random Storage Server
 // ---------------------------------------------------------------------------
 pair<string, int> getRandomStorageServer()
 {
@@ -115,13 +142,12 @@ pair<string, int> getRandomStorageServer()
 }
 
 // ---------------------------------------------------------------------------
-// Function to handle client communication
+// Handle Client Requests
 // ---------------------------------------------------------------------------
 void handleClient(int socket_fd, string clientIP, int clientPort)
 {
     char buffer[1024] = {0};
     cout << "[*] Started session with Client: " << clientIP << ":" << clientPort << endl;
-
 
     while (true)
     {
@@ -131,16 +157,13 @@ void handleClient(int socket_fd, string clientIP, int clientPort)
         {
             cout << "[x] Client disconnected unexpectedly: " << clientIP << ":" << clientPort << endl;
             logToFile("[x] Client disconnected unexpectedly: " + clientIP + ":" + to_string(clientPort));
-
             close(socket_fd);
             return;
         }
 
         string msg(buffer);
         cout << "[Client " << clientIP << " " << clientPort << "] Message: " << msg << endl;
-
         logToFile("[Client " + clientIP + ":" + to_string(clientPort) + "] Request: " + msg);
-
 
         if (msg == "EXIT")
         {
@@ -149,7 +172,6 @@ void handleClient(int socket_fd, string clientIP, int clientPort)
             return;
         }
 
-        // Parse operation and filename
         size_t firstSep = msg.find('|');
         string op = msg.substr(0, firstSep);
         string filename = (firstSep != string::npos) ? msg.substr(firstSep + 1) : "";
@@ -163,19 +185,19 @@ void handleClient(int socket_fd, string clientIP, int clientPort)
                 continue;
             }
 
-            // --- Check if file already exists ---
-            if ((op == "READ" || op == "WRITE") && fileToServer.find(filename) != fileToServer.end())
-            {
-                auto [ip, port] = fileToServer[filename];
-                string response = "STORAGE_SERVER|" + to_string(port) + "|" + ip;
-                send(socket_fd, response.c_str(), response.size(), 0);
-                cout << "[→] Sent cached mapping for '" << filename << "' → " << ip << ":" << port << endl;
-                logToFile("[CACHE] Sent cached mapping for '" + filename + "' → " + ip + ":" + to_string(port));
+            // --- Trie-based lookup ---
+            auto [foundIP, foundPort] = searchFile(filename);
 
+            if ((op == "READ" || op == "WRITE") && !foundIP.empty() && foundPort != -1)
+            {
+                string response = "STORAGE_SERVER|" + to_string(foundPort) + "|" + foundIP;
+                send(socket_fd, response.c_str(), response.size(), 0);
+                cout << "[→] Sent cached mapping for '" << filename << "' → " << foundIP << ":" << foundPort << endl;
+                logToFile("[CACHE] Sent cached mapping for '" + filename + "' → " + foundIP + ":" + to_string(foundPort));
                 continue;
             }
 
-            // --- CREATE or first WRITE: choose a random storage server ---
+            // --- CREATE or first WRITE: random server ---
             auto [ip, port] = getRandomStorageServer();
             if (ip.empty() || port == -1)
             {
@@ -186,21 +208,17 @@ void handleClient(int socket_fd, string clientIP, int clientPort)
 
             cout << "[#] Selected random Storage Server: " << ip << ":" << port << endl;
 
-            // If CREATE — register file mapping
             if (op == "CREATE")
             {
-                fileToServer[filename] = {ip, port};
+                insertFile(filename, ip, port);
                 cout << "[+] Registered new file '" << filename << "' on " << ip << ":" << port << endl;
                 logToFile("[+] Registered new file '" + filename + "' on " + ip + ":" + to_string(port));
-
             }
 
-            // Reply to client
             string response = "STORAGE_SERVER|" + to_string(port) + "|" + ip;
             send(socket_fd, response.c_str(), response.size(), 0);
             cout << "[→] Sent storage server info to client: " << response << endl;
             logToFile("[→] Sent response to Client " + clientIP + ":" + to_string(clientPort) + " → " + response);
-
         }
         else
         {
@@ -211,7 +229,7 @@ void handleClient(int socket_fd, string clientIP, int clientPort)
 }
 
 // ---------------------------------------------------------------------------
-// Handle initial handshake
+// Handle Handshake
 // ---------------------------------------------------------------------------
 void handleConnection(int socket_fd, sockaddr_in client_addr)
 {
@@ -222,10 +240,8 @@ void handleConnection(int socket_fd, sockaddr_in client_addr)
 
     cout << "\n[+] Connection established from: " << clientIP
          << " | Port: " << ntohs(client_addr.sin_port) << endl;
-    
     logToFile("[+] Connection established from: " + clientIP + " | Port: " + to_string(ntohs(client_addr.sin_port)));
 
-    // --- Read handshake ---
     ssize_t bytesRead = read(socket_fd, buffer, sizeof(buffer));
     if (bytesRead <= 0)
     {
@@ -239,7 +255,6 @@ void handleConnection(int socket_fd, sockaddr_in client_addr)
 
     if (msg.rfind("Storage Server", 0) == 0)
     {
-        // Format: Storage Server|PORT:<port>|IP:<ip>
         size_t portPos = msg.find("PORT:");
         size_t ipPos = msg.find("IP:");
         if (portPos != string::npos && ipPos != string::npos)
@@ -248,7 +263,6 @@ void handleConnection(int socket_fd, sockaddr_in client_addr)
             string ip = msg.substr(ipPos + 3);
 
             storageServers[port] = ip;
-
             cout << "[+] Registered Storage Server: " << ip << ":" << port << endl;
             logToFile("[+] Registered Storage Server: " + ip + ":" + to_string(port));
 
@@ -263,7 +277,6 @@ void handleConnection(int socket_fd, sockaddr_in client_addr)
     }
     else if (msg.rfind("Client", 0) == 0)
     {
-        // Format: Client|PORT:<port>|IP:<ip>
         size_t portPos = msg.find("PORT:");
         size_t ipPos = msg.find("IP:");
         if (portPos != string::npos && ipPos != string::npos)

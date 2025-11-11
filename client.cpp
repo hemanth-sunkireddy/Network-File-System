@@ -76,8 +76,11 @@ int main()
     int sock = 0;
     char buffer[1024] = {0};
 
-    // Metadata cache: filename → (IP, port)
+    // Cache: filename → (IP, port)
     unordered_map<string, pair<string, int>> fileLocationCache;
+
+    // Persistent storage server connections: (IP:PORT) → socket
+    unordered_map<string, int> storageConnections;
 
     // Connect to Naming Server
     sock = connectToServer(NAMING_SERVER_IP, NAMING_SERVER_PORT);
@@ -86,16 +89,13 @@ int main()
 
     cout << "\n✅ Connected to Naming Server (" << NAMING_SERVER_IP << ":" << NAMING_SERVER_PORT << ")\n";
 
-    // Detect client IP
     string clientIP = getLocalIP();
 
-    // Get the ephemeral (random) port assigned to this client
     struct sockaddr_in localAddr;
     socklen_t addrLen = sizeof(localAddr);
     getsockname(sock, (struct sockaddr *)&localAddr, &addrLen);
     int clientPort = ntohs(localAddr.sin_port);
 
-    // --- Combined handshake message ---
     string handshakeMsg = "Client|PORT:" + to_string(clientPort) + "|IP:" + clientIP;
     send(sock, handshakeMsg.c_str(), handshakeMsg.size(), 0);
     cout << "→ Sent handshake: " << handshakeMsg << endl;
@@ -105,7 +105,7 @@ int main()
     cout << "← Received: " << buffer << endl;
 
     // -----------------------------------------------------------------------
-    // Main interactive loop
+    // Interactive Loop
     // -----------------------------------------------------------------------
     while (true)
     {
@@ -124,8 +124,14 @@ int main()
         {
             string exitMsg = "EXIT";
             send(sock, exitMsg.c_str(), exitMsg.size(), 0);
-            cout << "[x] Exiting..." << endl;
-            break;
+            cout << "[x] Exiting and closing all connections..." << endl;
+
+            // Close all persistent storage connections
+            for (auto &conn : storageConnections)
+                close(conn.second);
+
+            close(sock);
+            return 0;
         }
 
         string op;
@@ -141,12 +147,20 @@ int main()
             continue;
         }
 
-        // --- Get filename from user ---
+        // --- Ask for filename first ---
         string filename;
         cout << "Enter filename: ";
         getline(cin, filename);
 
-        // --- Check cache first ---
+        // --- Ask for file data immediately if WRITE or CREATE ---
+        string data = "";
+        if (op == "WRITE" || op == "CREATE")
+        {
+            cout << "Enter file data: ";
+            getline(cin, data);
+        }
+
+        // --- Check cache or ask Naming Server ---
         string ip;
         int port;
 
@@ -155,7 +169,7 @@ int main()
             auto [cachedIP, cachedPort] = fileLocationCache[filename];
             ip = cachedIP;
             port = cachedPort;
-            cout << "Using cached location for '" << filename << "': " << ip << ":" << port << endl;
+            cout << "📦 Using cached location for '" << filename << "': " << ip << ":" << port << endl;
         }
         else
         {
@@ -193,40 +207,50 @@ int main()
             }
         }
 
-        // --- Connect to Storage Server ---
-        cout << "Connecting to Storage Server: " << ip << ":" << port << endl;
-        int storageSock = connectToServer(ip, port);
-        if (storageSock < 0)
-        {
-            cout << "[!] Failed to connect to Storage Server. Removing from cache.\n";
-            fileLocationCache.erase(filename);
-            continue;
-        }
+        // --- Persistent connection to Storage Server ---
+        string serverKey = ip + ":" + to_string(port);
+        int storageSock;
 
-        // --- Perform the requested operation ---
-        string msg;
-        if (op == "WRITE" || op == "CREATE")
+        if (storageConnections.find(serverKey) == storageConnections.end())
         {
-            string data;
-            cout << "Enter file data: ";
-            getline(cin, data);
-            msg = op + "|" + filename + "|" + data;
+            storageSock = connectToServer(ip, port);
+            if (storageSock < 0)
+            {
+                cout << "[!] Failed to connect to Storage Server. Removing from cache.\n";
+                fileLocationCache.erase(filename);
+                continue;
+            }
+            storageConnections[serverKey] = storageSock;
+            cout << "[+] Persistent connection established to " << serverKey << endl;
         }
         else
         {
-            msg = op + "|" + filename;
+            storageSock = storageConnections[serverKey];
         }
+
+        // --- Now we already have file data, send request directly ---
+        string msg;
+        if (op == "WRITE" || op == "CREATE")
+            msg = op + "|" + filename + "|" + data;
+        else
+            msg = op + "|" + filename;
 
         send(storageSock, msg.c_str(), msg.size(), 0);
         cout << "→ Sent to Storage Server: " << msg << endl;
 
         memset(buffer, 0, sizeof(buffer));
-        read(storageSock, buffer, sizeof(buffer));
-        cout << "← Response from Storage Server: " << buffer << endl;
+        ssize_t valread = read(storageSock, buffer, sizeof(buffer));
+        if (valread <= 0)
+        {
+            cout << "[!] Lost connection to Storage Server " << serverKey << ". Removing from cache.\n";
+            close(storageSock);
+            storageConnections.erase(serverKey);
+            fileLocationCache.erase(filename);
+            continue;
+        }
 
-        close(storageSock);
+        cout << "← Response from Storage Server: " << buffer << endl;
     }
 
-    close(sock);
     return 0;
 }
