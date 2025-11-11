@@ -5,15 +5,43 @@
 #include <arpa/inet.h>
 #include <thread>
 #include <map>
-#include <mutex>
+#include <vector>
+#include <random>
+#include <fstream>
+#include<iomanip>
 
 using namespace std;
 
 #define PORT 8080
 
-// Registry: IP -> Port
-map<string, int> storageServers;
-mutex storageMutex;
+// Registry of storage servers: Port -> IP
+map<int, string> storageServers;
+
+// Registry of files: filename -> (IP, Port)
+map<string, pair<string, int>> fileToServer;
+
+
+void logToFile(const string &message)
+{
+
+    ofstream logFile("log.txt", ios::app); // open in append mode
+    if (!logFile)
+    {
+        cerr << "[ERROR] Failed to open log file!" << endl;
+        return;
+    }
+
+    // Get current timestamp
+    auto now = chrono::system_clock::now();
+    time_t now_c = chrono::system_clock::to_time_t(now);
+    tm *localTime = localtime(&now_c);
+
+    // Write timestamp + message
+    logFile << "[" << put_time(localTime, "%Y-%m-%d %H:%M:%S") << "] "
+            << message << endl;
+
+    logFile.close(); // ensure write is flushed
+}
 
 // ---------------------------------------------------------------------------
 // Function to continuously monitor a storage server connection
@@ -30,15 +58,24 @@ void monitorStorageServer(int socket_fd, string clientIP, int registeredPort)
         {
             cout << "[x] Storage Server disconnected: " << clientIP << ":" << registeredPort << endl;
 
-            // Remove from registry safely
+            // Remove from registry
+            auto it = storageServers.find(registeredPort);
+            if (it != storageServers.end() && it->second == clientIP)
             {
-                lock_guard<mutex> lock(storageMutex);
-                auto it = storageServers.find(clientIP);
-                if (it != storageServers.end() && it->second == registeredPort)
+                storageServers.erase(it);
+                cout << "[#] Removed from registry. Active servers: "
+                     << storageServers.size() << endl;
+
+                // Remove all files belonging to this server
+                for (auto fIt = fileToServer.begin(); fIt != fileToServer.end();)
                 {
-                    storageServers.erase(it);
-                    cout << "[#] Removed from registry. Active servers: "
-                         << storageServers.size() << endl;
+                    if (fIt->second.first == clientIP && fIt->second.second == registeredPort)
+                    {
+                        cout << "[#] Removing file mapping for: " << fIt->first << endl;
+                        fIt = fileToServer.erase(fIt);
+                    }
+                    else
+                        ++fIt;
                 }
             }
 
@@ -49,10 +86,32 @@ void monitorStorageServer(int socket_fd, string clientIP, int registeredPort)
         string msg(buffer);
         cout << "[Storage " << clientIP << "] Message: " << msg << endl;
 
-        // Optional: respond or process storage messages
         string ack = "ACK from Naming Server";
         send(socket_fd, ack.c_str(), ack.size(), 0);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Function to select a random available storage server
+// ---------------------------------------------------------------------------
+pair<string, int> getRandomStorageServer()
+{
+    if (storageServers.empty())
+        return {"", -1};
+
+    vector<pair<int, string>> servers;
+    for (auto &s : storageServers)
+        servers.push_back({s.first, s.second});
+
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(0, servers.size() - 1);
+
+    int index = dis(gen);
+    int port = servers[index].first;
+    string ip = servers[index].second;
+
+    return {ip, port};
 }
 
 // ---------------------------------------------------------------------------
@@ -63,6 +122,7 @@ void handleClient(int socket_fd, string clientIP, int clientPort)
     char buffer[1024] = {0};
     cout << "[*] Started session with Client: " << clientIP << ":" << clientPort << endl;
 
+
     while (true)
     {
         memset(buffer, 0, sizeof(buffer));
@@ -70,29 +130,88 @@ void handleClient(int socket_fd, string clientIP, int clientPort)
         if (bytesRead <= 0)
         {
             cout << "[x] Client disconnected unexpectedly: " << clientIP << ":" << clientPort << endl;
+            logToFile("[x] Client disconnected unexpectedly: " + clientIP + ":" + to_string(clientPort));
+
             close(socket_fd);
             return;
         }
 
         string msg(buffer);
-        cout << "[Client " << clientIP << "] Message: " << msg << endl;
+        cout << "[Client " << clientIP << " " << clientPort << "] Message: " << msg << endl;
+
+        logToFile("[Client " + clientIP + ":" + to_string(clientPort) + "] Request: " + msg);
+
 
         if (msg == "EXIT")
         {
             cout << "[x] Client requested disconnection: " << clientIP << ":" << clientPort << endl;
-
             close(socket_fd);
             return;
         }
 
-        // Respond to normal messages
-        const char *response = "Hello from Naming Server";
-        send(socket_fd, response, strlen(response), 0);
+        // Parse operation and filename
+        size_t firstSep = msg.find('|');
+        string op = msg.substr(0, firstSep);
+        string filename = (firstSep != string::npos) ? msg.substr(firstSep + 1) : "";
+
+        if (op == "READ" || op == "WRITE" || op == "CREATE")
+        {
+            if (storageServers.empty())
+            {
+                string err = "ERROR|No active storage servers available";
+                send(socket_fd, err.c_str(), err.size(), 0);
+                continue;
+            }
+
+            // --- Check if file already exists ---
+            if ((op == "READ" || op == "WRITE") && fileToServer.find(filename) != fileToServer.end())
+            {
+                auto [ip, port] = fileToServer[filename];
+                string response = "STORAGE_SERVER|" + to_string(port) + "|" + ip;
+                send(socket_fd, response.c_str(), response.size(), 0);
+                cout << "[→] Sent cached mapping for '" << filename << "' → " << ip << ":" << port << endl;
+                logToFile("[CACHE] Sent cached mapping for '" + filename + "' → " + ip + ":" + to_string(port));
+
+                continue;
+            }
+
+            // --- CREATE or first WRITE: choose a random storage server ---
+            auto [ip, port] = getRandomStorageServer();
+            if (ip.empty() || port == -1)
+            {
+                string err = "ERROR|No available storage servers";
+                send(socket_fd, err.c_str(), err.size(), 0);
+                continue;
+            }
+
+            cout << "[#] Selected random Storage Server: " << ip << ":" << port << endl;
+
+            // If CREATE — register file mapping
+            if (op == "CREATE")
+            {
+                fileToServer[filename] = {ip, port};
+                cout << "[+] Registered new file '" << filename << "' on " << ip << ":" << port << endl;
+                logToFile("[+] Registered new file '" + filename + "' on " + ip + ":" + to_string(port));
+
+            }
+
+            // Reply to client
+            string response = "STORAGE_SERVER|" + to_string(port) + "|" + ip;
+            send(socket_fd, response.c_str(), response.size(), 0);
+            cout << "[→] Sent storage server info to client: " << response << endl;
+            logToFile("[→] Sent response to Client " + clientIP + ":" + to_string(clientPort) + " → " + response);
+
+        }
+        else
+        {
+            const char *response = "UNKNOWN_COMMAND";
+            send(socket_fd, response, strlen(response), 0);
+        }
     }
 }
 
 // ---------------------------------------------------------------------------
-// Function to handle the initial handshake
+// Handle initial handshake
 // ---------------------------------------------------------------------------
 void handleConnection(int socket_fd, sockaddr_in client_addr)
 {
@@ -103,8 +222,10 @@ void handleConnection(int socket_fd, sockaddr_in client_addr)
 
     cout << "\n[+] Connection established from: " << clientIP
          << " | Port: " << ntohs(client_addr.sin_port) << endl;
+    
+    logToFile("[+] Connection established from: " + clientIP + " | Port: " + to_string(ntohs(client_addr.sin_port)));
 
-    // --- First message (handshake) ---
+    // --- Read handshake ---
     ssize_t bytesRead = read(socket_fd, buffer, sizeof(buffer));
     if (bytesRead <= 0)
     {
@@ -116,66 +237,55 @@ void handleConnection(int socket_fd, sockaddr_in client_addr)
     string msg(buffer);
     cout << "[Handshake]: " << msg << endl;
 
-    // --- Identify connection type ---
     if (msg.rfind("Storage Server", 0) == 0)
     {
-        // Expect a registration message next: REGISTER|PORT:<port>
-        memset(buffer, 0, sizeof(buffer));
-        bytesRead = read(socket_fd, buffer, sizeof(buffer));
-        if (bytesRead <= 0)
+        // Format: Storage Server|PORT:<port>|IP:<ip>
+        size_t portPos = msg.find("PORT:");
+        size_t ipPos = msg.find("IP:");
+        if (portPos != string::npos && ipPos != string::npos)
         {
-            cout << "[!] No registration info from Storage Server " << clientIP << endl;
-            close(socket_fd);
-            return;
-        }
+            int port = stoi(msg.substr(portPos + 5, ipPos - portPos - 6));
+            string ip = msg.substr(ipPos + 3);
 
-        string regMsg(buffer);
-        size_t pos = regMsg.find("PORT:");
-        if (pos != string::npos)
-        {
-            int port = stoi(regMsg.substr(pos + 5));
+            storageServers[port] = ip;
 
-            // Store in registry
-            {
-                lock_guard<mutex> lock(storageMutex);
-                storageServers[clientIP] = port;
-            }
+            cout << "[+] Registered Storage Server: " << ip << ":" << port << endl;
+            logToFile("[+] Registered Storage Server: " + ip + ":" + to_string(port));
 
-            cout << "[+] Registered Storage Server: " << clientIP << ":" << port << endl;
             cout << "[#] Total registered storage servers: " << storageServers.size() << endl;
 
             string ack = "Storage Registration Successful";
             send(socket_fd, ack.c_str(), ack.size(), 0);
 
-            // Launch monitor thread
-            thread monitorThread(monitorStorageServer, socket_fd, clientIP, port);
+            thread monitorThread(monitorStorageServer, socket_fd, ip, port);
             monitorThread.detach();
-            return;
-        }
-        else
-        {
-            string err = "ERROR: Invalid registration format (expected REGISTER|PORT:<port>)";
-            send(socket_fd, err.c_str(), err.size(), 0);
-            close(socket_fd);
-            return;
         }
     }
     else if (msg.rfind("Client", 0) == 0)
     {
-        string ack = "Client connected successfully!";
-        send(socket_fd, ack.c_str(), ack.size(), 0);
+        // Format: Client|PORT:<port>|IP:<ip>
+        size_t portPos = msg.find("PORT:");
+        size_t ipPos = msg.find("IP:");
+        if (portPos != string::npos && ipPos != string::npos)
+        {
+            int clientPort = stoi(msg.substr(portPos + 5, ipPos - portPos - 6));
+            string ip = msg.substr(ipPos + 3);
 
-        int clientPort = ntohs(client_addr.sin_port);
-        thread clientThread(handleClient, socket_fd, clientIP, clientPort);
-        clientThread.detach();
-        return;
+            cout << "[+] Registered Client: " << ip << ":" << clientPort << endl;
+            logToFile("[+] Registered Client: " + ip + ":" + to_string(clientPort));
+
+            string ack = "Client connected successfully!";
+            send(socket_fd, ack.c_str(), ack.size(), 0);
+
+            thread clientThread(handleClient, socket_fd, ip, clientPort);
+            clientThread.detach();
+        }
     }
     else
     {
-        string err = "ERROR: Unknown connection type. Send 'Client' or 'Storage Server' first.";
+        string err = "ERROR: Unknown connection type.";
         send(socket_fd, err.c_str(), err.size(), 0);
         close(socket_fd);
-        return;
     }
 }
 
@@ -188,7 +298,6 @@ int main()
     struct sockaddr_in address, client_addr;
     socklen_t client_len = sizeof(client_addr);
 
-    // Create socket
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         perror("Socket Creation Failed");
@@ -198,7 +307,6 @@ int main()
     int opt = 1;
     setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-    // Bind to IP/Port
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons(PORT);
@@ -209,7 +317,6 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    // Print startup info
     char hostIP[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(address.sin_addr), hostIP, INET_ADDRSTRLEN);
     cout << "\n==============================\n";
@@ -217,7 +324,6 @@ int main()
     cout << "Listening on IP: " << hostIP << " | Port: " << ntohs(address.sin_port) << endl;
     cout << "==============================\n";
 
-    // Listen for connections
     if (listen(server_fd, 10) < 0)
     {
         perror("Listen failed");
@@ -226,7 +332,6 @@ int main()
 
     cout << "[*] Waiting for incoming connections...\n";
 
-    // Infinite loop — keeps accepting clients and storage servers
     while (true)
     {
         int new_socket = accept(server_fd, (struct sockaddr *)&client_addr, &client_len);

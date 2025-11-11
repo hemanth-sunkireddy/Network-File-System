@@ -2,20 +2,22 @@
 #include <unistd.h>
 #include <string>
 #include <cstring>
+#include <unordered_map>
 #include <arpa/inet.h>
+#include <netdb.h>
 using namespace std;
 
-#define PORT 8080
-#define SERVER_IP "127.0.0.1"
+#define NAMING_SERVER_IP "127.0.0.1"
+#define NAMING_SERVER_PORT 8080
 
-int main()
+// ---------------------------------------------------------------------------
+// Helper function to connect to a given IP/port
+// ---------------------------------------------------------------------------
+int connectToServer(const string &ip, int port)
 {
-    int sock = 0;
-    struct sockaddr_in serv_addr, local_addr;
-    char buffer[1024] = {0};
-    string message;
+    int sock;
+    struct sockaddr_in serv_addr;
 
-    // Create socket
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
         perror("Socket creation error");
@@ -23,114 +25,208 @@ int main()
     }
 
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(PORT);
+    serv_addr.sin_port = htons(port);
 
-    // Convert IPv4 address from text to binary form
-    if (inet_pton(AF_INET, SERVER_IP, &serv_addr.sin_addr) <= 0)
+    if (inet_pton(AF_INET, ip.c_str(), &serv_addr.sin_addr) <= 0)
     {
         perror("Invalid address / Address not supported");
         return -1;
     }
 
-    // Connect to the Naming Server
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
     {
         perror("Connection Failed");
         return -1;
     }
 
-    // Get local client details (IP & Port)
-    socklen_t addrlen = sizeof(local_addr);
-    getsockname(sock, (struct sockaddr *)&local_addr, &addrlen);
+    return sock;
+}
 
-    char clientIP[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &(local_addr.sin_addr), clientIP, INET_ADDRSTRLEN);
-    int clientPort = ntohs(local_addr.sin_port);
+// ---------------------------------------------------------------------------
+// Helper to get local IP (for handshake)
+// ---------------------------------------------------------------------------
+string getLocalIP()
+{
+    char hostbuffer[256];
+    char *IPbuffer;
+    struct hostent *host_entry;
 
-    // Print connection info
-    cout << "\n==============================" << endl;
-    cout << "✅ Connected to Naming Server" << endl;
-    cout << "------------------------------" << endl;
-    cout << "Client IP   : " << clientIP << endl;
-    cout << "Client Port : " << clientPort << endl;
-    cout << "Server IP   : " << SERVER_IP << endl;
-    cout << "Server Port : " << PORT << endl;
-    cout << "==============================\n"
-         << endl;
+    if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1)
+    {
+        perror("gethostname");
+        return "127.0.0.1";
+    }
 
-    // --- Initial Handshake ---
-    string handshakeMsg = "Client";
+    host_entry = gethostbyname(hostbuffer);
+    if (host_entry == nullptr)
+    {
+        perror("gethostbyname");
+        return "127.0.0.1";
+    }
+
+    IPbuffer = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
+    return string(IPbuffer);
+}
+
+// ---------------------------------------------------------------------------
+// Main
+// ---------------------------------------------------------------------------
+int main()
+{
+    int sock = 0;
+    char buffer[1024] = {0};
+
+    // Metadata cache: filename → (IP, port)
+    unordered_map<string, pair<string, int>> fileLocationCache;
+
+    // Connect to Naming Server
+    sock = connectToServer(NAMING_SERVER_IP, NAMING_SERVER_PORT);
+    if (sock < 0)
+        return -1;
+
+    cout << "\n✅ Connected to Naming Server (" << NAMING_SERVER_IP << ":" << NAMING_SERVER_PORT << ")\n";
+
+    // Detect client IP
+    string clientIP = getLocalIP();
+
+    // Get the ephemeral (random) port assigned to this client
+    struct sockaddr_in localAddr;
+    socklen_t addrLen = sizeof(localAddr);
+    getsockname(sock, (struct sockaddr *)&localAddr, &addrLen);
+    int clientPort = ntohs(localAddr.sin_port);
+
+    // --- Combined handshake message ---
+    string handshakeMsg = "Client|PORT:" + to_string(clientPort) + "|IP:" + clientIP;
     send(sock, handshakeMsg.c_str(), handshakeMsg.size(), 0);
     cout << "→ Sent handshake: " << handshakeMsg << endl;
 
     memset(buffer, 0, sizeof(buffer));
-    ssize_t bytesRead = read(sock, buffer, sizeof(buffer));
-    if (bytesRead > 0)
-    {
-        cout << "← Received response from server: " << buffer << endl;
-    }
-    else
-    {
-        cout << "[!] No handshake response from server. Exiting." << endl;
-        close(sock);
-        return 0;
-    }
+    read(sock, buffer, sizeof(buffer));
+    cout << "← Received: " << buffer << endl;
 
-    // --- Main communication loop ---
+    // -----------------------------------------------------------------------
+    // Main interactive loop
+    // -----------------------------------------------------------------------
     while (true)
     {
-        cout << "\nChoose an option:" << endl;
-        cout << "1. Send Hello" << endl;
-        cout << "2. Exit" << endl;
+        cout << "\nChoose operation:\n";
+        cout << "1. READ file\n";
+        cout << "2. WRITE file\n";
+        cout << "3. CREATE file\n";
+        cout << "4. EXIT\n";
         cout << "Enter choice: ";
 
         int choice;
         cin >> choice;
-        cin.ignore(); // clear newline from input buffer
+        cin.ignore();
 
-        if (choice == 1)
-        {
-            message = "Hello from client";
-
-            ssize_t bytesSent = send(sock, message.c_str(), message.length(), 0);
-            if (bytesSent <= 0)
-            {
-                cout << "[!] Failed to send message. Connection might be lost." << endl;
-                break;
-            }
-
-            cout << "\n→ Sent message to server: " << message << endl;
-
-            memset(buffer, 0, sizeof(buffer));
-            bytesRead = read(sock, buffer, sizeof(buffer));
-            if (bytesRead > 0)
-            {
-                cout << "← Received response from server: " << buffer << endl;
-            }
-            else
-            {
-                cout << "[!] No response or connection lost." << endl;
-                break;
-            }
-        }
-        else if (choice == 2)
+        if (choice == 4)
         {
             string exitMsg = "EXIT";
             send(sock, exitMsg.c_str(), exitMsg.size(), 0);
-            cout << "\n[x] Sent EXIT signal to server and closing connection..." << endl;
+            cout << "[x] Exiting..." << endl;
             break;
+        }
+
+        string op;
+        if (choice == 1)
+            op = "READ";
+        else if (choice == 2)
+            op = "WRITE";
+        else if (choice == 3)
+            op = "CREATE";
+        else
+        {
+            cout << "[!] Invalid choice.\n";
+            continue;
+        }
+
+        // --- Get filename from user ---
+        string filename;
+        cout << "Enter filename: ";
+        getline(cin, filename);
+
+        // --- Check cache first ---
+        string ip;
+        int port;
+
+        if (fileLocationCache.find(filename) != fileLocationCache.end())
+        {
+            auto [cachedIP, cachedPort] = fileLocationCache[filename];
+            ip = cachedIP;
+            port = cachedPort;
+            cout << "Using cached location for '" << filename << "': " << ip << ":" << port << endl;
         }
         else
         {
-            cout << "[!] Invalid choice. Try again." << endl;
+            // No cache → ask Naming Server
+            string namingReq = op + "|" + filename;
+            send(sock, namingReq.c_str(), namingReq.size(), 0);
+            cout << "→ Sent to Naming Server: " << namingReq << endl;
+
+            memset(buffer, 0, sizeof(buffer));
+            read(sock, buffer, sizeof(buffer));
+            string response(buffer);
+            cout << "← Naming Server Response: " << response << endl;
+
+            // Expecting: STORAGE_SERVER|<port>|<ip>
+            if (response.rfind("STORAGE_SERVER|", 0) == 0)
+            {
+                size_t firstSep = response.find("|", 15);
+                if (firstSep == string::npos)
+                {
+                    cout << "[!] Malformed response from Naming Server.\n";
+                    continue;
+                }
+
+                port = stoi(response.substr(15, firstSep - 15));
+                ip = response.substr(firstSep + 1);
+
+                // Cache it
+                fileLocationCache[filename] = {ip, port};
+                cout << "📦 Cached storage location for '" << filename << "' → " << ip << ":" << port << endl;
+            }
+            else
+            {
+                cout << "[!] Invalid response from Naming Server.\n";
+                continue;
+            }
         }
+
+        // --- Connect to Storage Server ---
+        cout << "Connecting to Storage Server: " << ip << ":" << port << endl;
+        int storageSock = connectToServer(ip, port);
+        if (storageSock < 0)
+        {
+            cout << "[!] Failed to connect to Storage Server. Removing from cache.\n";
+            fileLocationCache.erase(filename);
+            continue;
+        }
+
+        // --- Perform the requested operation ---
+        string msg;
+        if (op == "WRITE" || op == "CREATE")
+        {
+            string data;
+            cout << "Enter file data: ";
+            getline(cin, data);
+            msg = op + "|" + filename + "|" + data;
+        }
+        else
+        {
+            msg = op + "|" + filename;
+        }
+
+        send(storageSock, msg.c_str(), msg.size(), 0);
+        cout << "→ Sent to Storage Server: " << msg << endl;
+
+        memset(buffer, 0, sizeof(buffer));
+        read(storageSock, buffer, sizeof(buffer));
+        cout << "← Response from Storage Server: " << buffer << endl;
+
+        close(storageSock);
     }
 
-    // Close socket
     close(sock);
-    cout << "\n💤 Disconnected from Naming Server." << endl;
-    cout << "Client (" << clientIP << ":" << clientPort << ") terminated gracefully.\n"
-         << endl;
-
     return 0;
 }
