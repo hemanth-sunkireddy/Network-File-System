@@ -2,48 +2,102 @@
 #include <unistd.h>
 #include <string>
 #include <cstring>
-#include <unordered_map>
 #include <arpa/inet.h>
+#include <csignal>
 #include <netdb.h>
+#include <fstream>
+#include <sstream>
+#include <mutex>
+#include <map>
+#include <thread>
+#include <chrono>
+#include <list>
+#include <unordered_map>
+
 using namespace std;
 
 #define NAMING_SERVER_IP "127.0.0.1"
 #define NAMING_SERVER_PORT 8080
 
-// ---------------------------------------------------------------------------
-// Helper function to connect to a given IP/port
-// ---------------------------------------------------------------------------
-int connectToServer(const string &ip, int port)
+int nm_sock = 0; // Naming Server socket
+int ss_sock = 0; // Storage Server's listening socket
+bool running = true;
+
+// -----------------------------------------
+// File Lock Table
+// -----------------------------------------
+struct FileLock
 {
-    int sock;
-    struct sockaddr_in serv_addr;
+    bool locked = false;
+    string ownerID;
+};
 
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+mutex lockMutex;
+map<string, FileLock> fileLocks;
+
+// -----------------------------------------
+// LRU Cache (Filename -> Naming Server Response)
+// -----------------------------------------
+const int LRU_CAPACITY = 5;
+list<string> lruList; // MRU at front
+unordered_map<string, pair<string, list<string>::iterator>> lruCache;
+mutex lruMutex;
+
+bool getFromLRU(const string &key, string &value)
+{
+    lock_guard<mutex> guard(lruMutex);
+    auto it = lruCache.find(key);
+    if (it == lruCache.end())
+        return false;
+
+    lruList.erase(it->second.second);
+    lruList.push_front(key);
+    it->second.second = lruList.begin();
+    value = it->second.first;
+    return true;
+}
+
+void putIntoLRU(const string &key, const string &value)
+{
+    lock_guard<mutex> guard(lruMutex);
+
+    if (lruCache.find(key) != lruCache.end())
     {
-        perror("Socket creation error");
-        return -1;
+        lruList.erase(lruCache[key].second);
+    }
+    else if (lruCache.size() >= LRU_CAPACITY)
+    {
+        string lruKey = lruList.back();
+        lruList.pop_back();
+        lruCache.erase(lruKey);
     }
 
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(port);
-
-    if (inet_pton(AF_INET, ip.c_str(), &serv_addr.sin_addr) <= 0)
-    {
-        perror("Invalid address / Address not supported");
-        return -1;
-    }
-
-    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0)
-    {
-        perror("Connection Failed");
-        return -1;
-    }
-
-    return sock;
+    lruList.push_front(key);
+    lruCache[key] = {value, lruList.begin()};
 }
 
 // ---------------------------------------------------------------------------
-// Helper to get local IP (for handshake)
+// Graceful shutdown handler
+// ---------------------------------------------------------------------------
+void handleExit(int signum)
+{
+    cout << "\n[x] Caught signal (" << signum << "). Shutting down Storage Server gracefully..." << endl;
+
+    if (nm_sock > 0)
+    {
+        string exitMsg = "EXIT";
+        send(nm_sock, exitMsg.c_str(), exitMsg.size(), 0);
+        close(nm_sock);
+    }
+
+    if (ss_sock > 0)
+        close(ss_sock);
+
+    running = false;
+}
+
+// ---------------------------------------------------------------------------
+// Helper to get the local IP
 // ---------------------------------------------------------------------------
 string getLocalIP()
 {
@@ -52,205 +106,166 @@ string getLocalIP()
     struct hostent *host_entry;
 
     if (gethostname(hostbuffer, sizeof(hostbuffer)) == -1)
-    {
-        perror("gethostname");
         return "127.0.0.1";
-    }
 
     host_entry = gethostbyname(hostbuffer);
-    if (host_entry == nullptr)
-    {
-        perror("gethostbyname");
+    if (!host_entry)
         return "127.0.0.1";
-    }
 
     IPbuffer = inet_ntoa(*((struct in_addr *)host_entry->h_addr_list[0]));
     return string(IPbuffer);
 }
 
 // ---------------------------------------------------------------------------
-// Main
+// Query Naming Server WITH LRU
+// ---------------------------------------------------------------------------
+string queryNamingServer(const string &filename)
+{
+    string cached;
+    if (getFromLRU(filename, cached))
+    {
+        cout << "[LRU HIT] " << filename << endl;
+        return cached;
+    }
+
+    cout << "[LRU MISS] Querying Naming Server for " << filename << endl;
+    string req = "LOOKUP|" + filename;
+    send(nm_sock, req.c_str(), req.size(), 0);
+
+    char buffer[1024] = {0};
+    read(nm_sock, buffer, sizeof(buffer));
+    string response(buffer);
+
+    putIntoLRU(filename, response);
+    return response;
+}
+
+// ---------------------------------------------------------------------------
+// Function to handle client command
+// ---------------------------------------------------------------------------
+string handleClientCommand(const string &msg, int clientSock)
+{
+    stringstream ss(msg);
+    string command, filename, data;
+
+    getline(ss, command, '|');
+    getline(ss, filename, '|');
+    getline(ss, data, '|');
+
+    if (command == "LOOKUP")
+    {
+        return queryNamingServer(filename);
+    }
+
+    if (command == "READ")
+    {
+        ifstream infile(filename);
+        if (!infile)
+            return "[ERROR] File not found";
+
+        stringstream buffer;
+        buffer << infile.rdbuf();
+        infile.close();
+        return buffer.str();
+    }
+
+    if (command == "WRITE")
+    {
+        sockaddr_in addr;
+        socklen_t len = sizeof(addr);
+        getpeername(clientSock, (sockaddr *)&addr, &len);
+        string clientID =
+            string(inet_ntoa(addr.sin_addr)) + ":" + to_string(ntohs(addr.sin_port));
+
+        lockMutex.lock();
+        auto &lockInfo = fileLocks[filename];
+
+        if (lockInfo.locked && lockInfo.ownerID != clientID)
+        {
+            lockMutex.unlock();
+            return "[ERROR] File locked by another client";
+        }
+
+        lockInfo.locked = true;
+        lockInfo.ownerID = clientID;
+        lockMutex.unlock();
+
+        thread([filename, clientID]()
+               {
+                   this_thread::sleep_for(chrono::seconds(10));
+                   lock_guard<mutex> g(lockMutex);
+                   if (fileLocks[filename].ownerID == clientID)
+                   {
+                       fileLocks[filename].locked = false;
+                       fileLocks[filename].ownerID = "";
+                   }
+               })
+            .detach();
+
+        ofstream outfile(filename, ios::trunc);
+        if (!outfile)
+            return "[ERROR] Cannot write file";
+
+        outfile << data;
+        outfile.close();
+        return "[WRITE OK]";
+    }
+
+    if (command == "CREATE")
+    {
+        ofstream outfile(filename);
+        if (!outfile)
+            return "[ERROR] Cannot create file";
+        outfile.close();
+        return "[CREATE OK]";
+    }
+
+    return "[ERROR] Unknown command";
+}
+
 // ---------------------------------------------------------------------------
 int main()
 {
-    int sock = 0;
-    char buffer[1024] = {0};
+    signal(SIGINT, handleExit);
 
-    // Cache: filename → (IP, port)
-    unordered_map<string, pair<string, int>> fileLocationCache;
+    sockaddr_in nm_addr{}, ss_addr{}, clientAddr{};
+    char buffer[2048] = {0};
 
-    // Persistent storage server connections: (IP:PORT) → socket
-    unordered_map<string, int> storageConnections;
+    nm_sock = socket(AF_INET, SOCK_STREAM, 0);
+    nm_addr.sin_family = AF_INET;
+    nm_addr.sin_port = htons(NAMING_SERVER_PORT);
+    inet_pton(AF_INET, NAMING_SERVER_IP, &nm_addr.sin_addr);
 
-    // Connect to Naming Server
-    sock = connectToServer(NAMING_SERVER_IP, NAMING_SERVER_PORT);
-    if (sock < 0)
-        return -1;
+    ss_sock = socket(AF_INET, SOCK_STREAM, 0);
+    ss_addr.sin_family = AF_INET;
+    ss_addr.sin_addr.s_addr = INADDR_ANY;
+    ss_addr.sin_port = 0;
 
-    cout << "\n✅ Connected to Naming Server (" << NAMING_SERVER_IP << ":" << NAMING_SERVER_PORT << ")\n";
+    bind(ss_sock, (sockaddr *)&ss_addr, sizeof(ss_addr));
+    listen(ss_sock, 5);
 
-    string clientIP = getLocalIP();
+    connect(nm_sock, (sockaddr *)&nm_addr, sizeof(nm_addr));
 
-    struct sockaddr_in localAddr;
-    socklen_t addrLen = sizeof(localAddr);
-    getsockname(sock, (struct sockaddr *)&localAddr, &addrLen);
-    int clientPort = ntohs(localAddr.sin_port);
+    string reg_msg = "Storage Server|IP:" + getLocalIP();
+    send(nm_sock, reg_msg.c_str(), reg_msg.size(), 0);
 
-    string handshakeMsg = "Client|PORT:" + to_string(clientPort) + "|IP:" + clientIP;
-    send(sock, handshakeMsg.c_str(), handshakeMsg.size(), 0);
-    cout << "→ Sent handshake: " << handshakeMsg << endl;
-
-    memset(buffer, 0, sizeof(buffer));
-    read(sock, buffer, sizeof(buffer));
-    cout << "← Received: " << buffer << endl;
-
-    // -----------------------------------------------------------------------
-    // Interactive Loop
-    // -----------------------------------------------------------------------
-    while (true)
+    while (running)
     {
-        cout << "\nChoose operation:\n";
-        cout << "1. READ file\n";
-        cout << "2. WRITE file\n";
-        cout << "3. CREATE file\n";
-        cout << "4. EXIT\n";
-        cout << "Enter choice: ";
-
-        int choice;
-        cin >> choice;
-        cin.ignore();
-
-        if (choice == 4)
-        {
-            string exitMsg = "EXIT";
-            send(sock, exitMsg.c_str(), exitMsg.size(), 0);
-            cout << "[x] Exiting and closing all connections..." << endl;
-
-            // Close all persistent storage connections
-            for (auto &conn : storageConnections)
-                close(conn.second);
-
-            close(sock);
-            return 0;
-        }
-
-        string op;
-        if (choice == 1)
-            op = "READ";
-        else if (choice == 2)
-            op = "WRITE";
-        else if (choice == 3)
-            op = "CREATE";
-        else
-        {
-            cout << "[!] Invalid choice.\n";
+        socklen_t len = sizeof(clientAddr);
+        int clientSock = accept(ss_sock, (sockaddr *)&clientAddr, &len);
+        if (clientSock < 0)
             continue;
-        }
-
-        // --- Ask for filename first ---
-        string filename;
-        cout << "Enter filename: ";
-        getline(cin, filename);
-
-        // --- Ask for file data immediately if WRITE or CREATE ---
-        string data = "";
-        if (op == "WRITE" || op == "CREATE")
-        {
-            cout << "Enter file data: ";
-            getline(cin, data);
-        }
-
-        // --- Check cache or ask Naming Server ---
-        string ip;
-        int port;
-
-        if (fileLocationCache.find(filename) != fileLocationCache.end())
-        {
-            auto [cachedIP, cachedPort] = fileLocationCache[filename];
-            ip = cachedIP;
-            port = cachedPort;
-            cout << "📦 Using cached location for '" << filename << "': " << ip << ":" << port << endl;
-        }
-        else
-        {
-            // No cache → ask Naming Server
-            string namingReq = op + "|" + filename;
-            send(sock, namingReq.c_str(), namingReq.size(), 0);
-            cout << "→ Sent to Naming Server: " << namingReq << endl;
-
-            memset(buffer, 0, sizeof(buffer));
-            read(sock, buffer, sizeof(buffer));
-            string response(buffer);
-            cout << "← Naming Server Response: " << response << endl;
-
-            // Expecting: STORAGE_SERVER|<port>|<ip>
-            if (response.rfind("STORAGE_SERVER|", 0) == 0)
-            {
-                size_t firstSep = response.find("|", 15);
-                if (firstSep == string::npos)
-                {
-                    cout << "[!] Malformed response from Naming Server.\n";
-                    continue;
-                }
-
-                port = stoi(response.substr(15, firstSep - 15));
-                ip = response.substr(firstSep + 1);
-
-                // Cache it
-                fileLocationCache[filename] = {ip, port};
-                cout << "📦 Cached storage location for '" << filename << "' → " << ip << ":" << port << endl;
-            }
-            else
-            {
-                cout << "[!] Invalid response from Naming Server.\n";
-                continue;
-            }
-        }
-
-        // --- Persistent connection to Storage Server ---
-        string serverKey = ip + ":" + to_string(port);
-        int storageSock;
-
-        if (storageConnections.find(serverKey) == storageConnections.end())
-        {
-            storageSock = connectToServer(ip, port);
-            if (storageSock < 0)
-            {
-                cout << "[!] Failed to connect to Storage Server. Removing from cache.\n";
-                fileLocationCache.erase(filename);
-                continue;
-            }
-            storageConnections[serverKey] = storageSock;
-            cout << "[+] Persistent connection established to " << serverKey << endl;
-        }
-        else
-        {
-            storageSock = storageConnections[serverKey];
-        }
-
-        // --- Now we already have file data, send request directly ---
-        string msg;
-        if (op == "WRITE" || op == "CREATE")
-            msg = op + "|" + filename + "|" + data;
-        else
-            msg = op + "|" + filename;
-
-        send(storageSock, msg.c_str(), msg.size(), 0);
-        cout << "→ Sent to Storage Server: " << msg << endl;
 
         memset(buffer, 0, sizeof(buffer));
-        ssize_t valread = read(storageSock, buffer, sizeof(buffer));
-        if (valread <= 0)
-        {
-            cout << "[!] Lost connection to Storage Server " << serverKey << ". Removing from cache.\n";
-            close(storageSock);
-            storageConnections.erase(serverKey);
-            fileLocationCache.erase(filename);
-            continue;
-        }
+        read(clientSock, buffer, sizeof(buffer));
 
-        cout << "← Response from Storage Server: " << buffer << endl;
+        string response = handleClientCommand(buffer, clientSock);
+        send(clientSock, response.c_str(), response.size(), 0);
+
+        close(clientSock);
     }
 
+    close(nm_sock);
+    close(ss_sock);
     return 0;
 }
